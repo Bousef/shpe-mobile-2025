@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shpeucfmobile/screens/CodeScanner.dart';
-import 'package:shpeucfmobile/widgets/custom_button.dart';
-import '../widgets/custom_bottom_nav_bar.dart';
-// update if path differs
+import '../widgets/custom_bottom_nav_bar.dart'; // update if path differs
+import 'package:shpeucfmobile/landing.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -20,23 +18,11 @@ class _DashboardState extends State<Dashboard> {
 
 
   final List<Widget> _pages = [
-    Center(
-      child: Text('Home Page', 
-      style: TextStyle(color: Colors.white))),
-
-    Center(
-      child: Text('Gallery Page', 
-      style: TextStyle(color: Colors.white))),
-
-    Center(
-      child: Text('Calendar Page', 
-      style: TextStyle(color: Colors.white))),
-
-    CodeScanner(),
-
-    Center(
-    child: Text('Members Page', 
-    style: TextStyle(color: Colors.white))),
+    Center(child: Landing()),
+    Center(child: Text('Gallery Page', style: TextStyle(color: Colors.white))),
+    Center(child: Text('Calendar Page', style: TextStyle(color: Colors.white))),
+    Center(child: Text('Camera Page', style: TextStyle(color: Colors.white))),
+    Center(child: Text('Members Page', style: TextStyle(color: Colors.white))),
   ];
 
   void _onItemTapped(int index) {

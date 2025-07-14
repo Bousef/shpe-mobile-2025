@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:shpeucfmobile/landing.dart';
 import 'package:shpeucfmobile/screens/admindashboard.dart';
 import 'package:shpeucfmobile/services/supabase_service.dart';
 import 'package:shpeucfmobile/widgets/custom_button.dart';
@@ -131,6 +132,7 @@ class LoginState extends State<Login> {
                     
                             } catch (e) {
                               print('Navigation error: $e');
+                              
                               // for testing just let user pass but in the future remove this 
                               Navigator.pushReplacement(   
                                   context,

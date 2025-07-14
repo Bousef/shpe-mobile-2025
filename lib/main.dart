@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shpeucfmobile/landing.dart';
+import 'package:shpeucfmobile/screens/dashboard.dart';
+import 'package:shpeucfmobile/screens/homescreen.dart';
+import 'package:shpeucfmobile/screens/leaderboard.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'firebase_options.dart';
-import 'package:shpeucfmobile/screens/homescreen.dart';
 import 'package:shpeucfmobile/screens/login.dart';
 import 'package:shpeucfmobile/screens/SignUp.dart';
 
@@ -29,12 +32,14 @@ await Firebase.initializeApp(
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+
   @override
   Widget build(BuildContext context) {
+    
     return MaterialApp(
       debugShowCheckedModeBanner:
           false, // Hides the debug banner in the top-right corner
-      home: const HomeScreen(),
+     home: const HomeScreen(),
       routes: {
         '/login': (context) => Login(),
         '/signup': (context) => SignUp(),

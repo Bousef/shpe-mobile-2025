@@ -74,11 +74,18 @@ flutter:
     - lib/images/Leaderboard.png
     - lib/images/Pictures.png
     - lib/images/Qr.png
-    - lib/images/profile.jpg
+    - lib/images/Profile2.png
     - lib/images/SHPE.png
     - lib/images/topOfLeaderboard.png
     - lib/images/Leaderboard.png
     - lib/images/leaderboardWord.png
+    - lib/images/leaderboardWord2.png
+    - lib/images/topOfLeaderboard.svg
+    - lib/images/events.png
+    - lib/images/profile1.svg
+    - lib/images/ProfileBackground.jpeg
+    - lib/images/SHPE2.png
+    - lib/images/backbutton.png
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
