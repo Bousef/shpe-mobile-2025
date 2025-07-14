@@ -32,13 +32,6 @@ class _CodeScannerState extends State<CodeScanner> {
           QR(), // The scanner view
         ],
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 25),
-        child: CustomBottomNavBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-        ),
-      ),
     );
   }
 }

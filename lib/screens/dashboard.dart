@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_bottom_nav_bar.dart'; // update if path differs
 import 'package:shpeucfmobile/landing.dart';
+import 'package:shpeucfmobile/screens/CodeScanner.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -21,15 +22,23 @@ class _DashboardState extends State<Dashboard> {
     Center(child: Landing()),
     Center(child: Text('Instagram Page', style: TextStyle(color: Colors.white))),
     Center(child: Text('Calendar Page', style: TextStyle(color: Colors.white))),
-    Center(child: Text('Camera Page', style: TextStyle(color: Colors.white))),
+    CodeScanner(), // ✅ here!,
     Center(child: Text('Members Page', style: TextStyle(color: Colors.white))),
   ];
 
-  void _onItemTapped(int index) {
+//This is how you will switch between pages from the dashboard (you need this logic on every other page as well)
+void _onItemTapped(int index) {
+  if (index == 3) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CodeScanner()),
+    );
+  } else {
     setState(() {
       _selectedIndex = index;
     });
   }
+}
 
 
 
