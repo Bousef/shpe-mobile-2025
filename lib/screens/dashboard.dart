@@ -19,7 +19,7 @@ class _DashboardState extends State<Dashboard> {
 
   final List<Widget> _pages = [
     Center(child: Landing()),
-    Center(child: Text('Gallery Page', style: TextStyle(color: Colors.white))),
+    Center(child: Text('Instagram Page', style: TextStyle(color: Colors.white))),
     Center(child: Text('Calendar Page', style: TextStyle(color: Colors.white))),
     Center(child: Text('Camera Page', style: TextStyle(color: Colors.white))),
     Center(child: Text('Members Page', style: TextStyle(color: Colors.white))),
