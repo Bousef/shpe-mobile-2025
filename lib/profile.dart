@@ -40,20 +40,19 @@ class _ProfileState extends State<Profile> {
         return;
       }
 
-      final List userInfo =
-          await Supabase.instance.client
-              .from('users')
-              .select(
-                'firstname, lastname, points, created_at, events_attended, major',
-              )
-              .eq('id', userId)
-              .single();
+      final Map<String, dynamic> userInfo =
+        await Supabase.instance.client
+          .from('users')
+          .select('firstname, lastname, points, created_at, events_attended, major')
+          .eq('id', userId)
+          .single();
 
       setState(() {
-        curUser = List<Map<String, dynamic>>.from(userInfo);
+        curUser = [userInfo];
         isLoading = false;
         print('curUser = $curUser');
-      });
+        });
+
     } catch (error) {
       print('Error fetching users: $error');
       setState(() => isLoading = false);
