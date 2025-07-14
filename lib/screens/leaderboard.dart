@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shpeucfmobile/widgets/custom_bottom_nav_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -44,7 +45,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       _selectedIndex = index;
     });
 
-    // Navigation logic
     if (index == 0) {
       Navigator.pushReplacementNamed(context, '/home');
     } else if (index == 2) {
@@ -55,128 +55,147 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text('Leaderboard'),
-        backgroundColor: const Color(0xFF0A174E),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         foregroundColor: Colors.white,
       ),
       body: Stack(
         children: [
-          // Background image
+          // Background
           Positioned.fill(
-            child: Image.asset('lib/images/background.png', fit: BoxFit.cover),
+            child: SizedBox.expand(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    'lib/images/background.png',
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
+                  Container(color: Colors.black.withOpacity(0.4)),
+                ],
+              ),
+            ),
           ),
-          // Foreground content with embedded bottom navbar
+
           Column(
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 80),
+
+              // Top logos
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
                   children: [
-                    // Top-left images
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            'lib/images/topOfLeaderboard.png',
-                            width: 60,
-                            height: 60,
-                          ),
-                          const SizedBox(width: 10),
-                          Image.asset(
-                            'lib/images/SHPE.png',
-                            width: 60,
-                            height: 60,
-                          ),
-                        ],
-                      ),
+                    Image.asset(
+                      'lib/images/topOfLeaderboard.png',
+                      width: 60,
+                      height: 60,
                     ),
-                    // Centered banner image
-                    Center(
-                      child: Image.asset(
-                        'lib/images/leaderboardWord.png',
-                        width: 200,
-                        height: 100,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    // 5 horizontally centered profile pictures
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    const SizedBox(width: 10),
+                    SvgPicture.asset('lib/images/SHPE_Logo.svg', width: 100),
+                  ],
+                ),
+              ),
+              // Centered Leaderboard banner
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Center(
+                  child: Image.asset(
+                    'lib/images/leaderboardWord.png',
+                    width: 220,
+                    height: 80,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              // Top 5 profile pictures
+              if (!isLoading && users.isNotEmpty)
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 80,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(5, (index) {
+                          final user = users[index];
                           return Padding(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 6.0,
+                              horizontal: 8.0,
                             ),
-                            child: ClipOval(
-                              child: Image.asset(
-                                'lib/images/topOfLeaderboard.png',
-                                width: 50,
-                                height: 50,
-                                fit: BoxFit.cover,
-                              ),
+                            child: Column(
+                              children: [
+                                ClipOval(
+                                  child: Image.asset(
+                                    'lib/images/topOfLeaderboard.png',
+                                    width: 55,
+                                    height: 55,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  user['points'].toString(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           );
                         }),
                       ),
                     ),
-                    // User list or loading spinner
-                    Expanded(
-                      child:
-                          isLoading
-                              ? const Center(child: CircularProgressIndicator())
-                              : users.isEmpty
-                              ? const Center(
-                                child: Text(
-                                  'No users found.',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              )
-                              : ListView.builder(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                itemCount: users.length,
-                                itemBuilder: (context, index) {
-                                  final user = users[index];
-                                  return Card(
-                                    color: Colors.white.withOpacity(0.9),
-                                    margin: const EdgeInsets.symmetric(
-                                      vertical: 6,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: ListTile(
-                                      leading: const Icon(
-                                        Icons.person,
-                                        color: Colors.white,
-                                      ),
-                                      title: Text(
-                                        user['firstname'] ?? 'No Name',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      trailing: Text(
-                                        user['points'].toString(),
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                    ),
                   ],
                 ),
+              const SizedBox(height: 10),
+              // User list or loading
+              Expanded(
+                child:
+                    isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : users.isEmpty
+                        ? const Center(
+                          child: Text(
+                            'No users found.',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )
+                        : ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: users.length,
+                          itemBuilder: (context, index) {
+                            final user = users[index];
+                            return Card(
+                              color: Colors.white.withOpacity(0.95),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              child: ListTile(
+                                leading: const Icon(Icons.person),
+                                title: Text(
+                                  user['firstname'] ?? 'No Name',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                trailing: Text(
+                                  user['points'].toString(),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
               ),
-              // Custom Bottom Navbar
               Padding(
                 padding: const EdgeInsets.only(left: 20, right: 20, bottom: 25),
                 child: CustomBottomNavBar(
