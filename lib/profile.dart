@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shpeucfmobile/services/supabase_service.dart';
 import 'package:shpeucfmobile/widgets/custom_bottom_nav_bar.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -17,78 +17,67 @@ class _ProfileState extends State<Profile> {
   bool isLoading2 = true;
   int _selectedIndex = 0;
   int leaderboardPosition = 0;
-  late final SupabaseService _service;
+  final SupabaseService _service = SupabaseService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
     super.initState();
-    _service = SupabaseService();
-    fetchUsers();
+    fetchUserFromService();
     getLeaderboardPosition();
   }
 
-  Future<void> fetchUsers() async {
-    final supabase = Supabase.instance.client;
+  Future<void> fetchUserFromService() async {
     try {
-      final user = supabase.auth.currentUser;
-      final userId = user?.id;
+      final firebaseUser = _auth.currentUser;
+      final firebaseUid = firebaseUser?.uid;
 
-      print(userId);
-
-      if (userId == null) {
-        print('No user logged in');
+      if (firebaseUid == null) {
+        print('No Firebase user logged in');
+        setState(() => isLoading = false);
         return;
       }
 
-      final List userInfo =
-          await Supabase.instance.client
-              .from('users')
-              .select(
-                'firstname, lastname, points, created_at, events_attended, major',
-              )
-              .eq('id', userId)
-              .single();
+      final userInfo = await _service.getUserByFirebaseUid(firebaseUid);
 
-      setState(() {
-        curUser = List<Map<String, dynamic>>.from(userInfo);
-        isLoading = false;
-        print('curUser = $curUser');
-      });
+      if (userInfo != null) {
+        setState(() {
+          curUser = [userInfo];
+          isLoading = false;
+          print('curUser = $curUser');
+        });
+      } else {
+        print('User not found in Supabase');
+        setState(() => isLoading = false);
+      }
     } catch (error) {
-      print('Error fetching users: $error');
+      print('Error fetching user: $error');
       setState(() => isLoading = false);
     }
   }
 
   Future<void> getLeaderboardPosition() async {
-    final supabase = Supabase.instance.client;
     try {
-      final user = supabase.auth.currentUser;
-      final userId = user?.id;
+      final firebaseUser = _auth.currentUser;
+      final firebaseUid = firebaseUser?.uid;
 
-      print(userId);
-
-      if (userId == null) {
-        print('No user logged in');
+      if (firebaseUid == null) {
+        print('No Firebase user logged in');
+        setState(() => isLoading2 = false);
         return;
       }
 
-      final List leaderboard = await supabase
-          .from('users')
-          .select('id, points')
-          .order('points', ascending: false);
+      final leaderboard = await SupabaseService().getAllUsers();
+      leaderboard.sort((a, b) => (b['points'] ?? 0).compareTo(a['points'] ?? 0));
 
-      print(leaderboard);
-      final index = leaderboard.indexWhere((u) => u['id'] == userId);
-
-      print(index);
+      final index = leaderboard.indexWhere((u) => u['firebase_uid'] == firebaseUid);
 
       setState(() {
         leaderboardPosition = index >= 0 ? index + 1 : -1;
         isLoading2 = false;
       });
     } catch (error) {
-      print('Error fetching users: $error');
+      print('Error fetching leaderboard: $error');
       setState(() => isLoading2 = false);
     }
   }
@@ -127,14 +116,10 @@ class _ProfileState extends State<Profile> {
               right: 0,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(curUser.length, (index) {
-                  final user = curUser[index];
+                children: curUser.map((user) {
                   final profileImg = _service.getAvatarUrl(user['firstname']);
-
                   return Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.25,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.25),
                     child: ClipOval(
                       child: SizedBox(
                         width: screenWidth * 0.5,
@@ -143,13 +128,12 @@ class _ProfileState extends State<Profile> {
                           profileImg,
                           fit: BoxFit.cover,
                         ),
-                      ), //make a circle
+                      ),
                     ),
                   );
-                }),
+                }).toList(),
               ),
             ),
-          //spot for username, name, date started
           if (!isLoading && curUser.isNotEmpty)
             Positioned(
               top: 310,
@@ -157,17 +141,13 @@ class _ProfileState extends State<Profile> {
               right: 0,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(curUser.length, (index) {
-                  final user = curUser[index];
-
+                children: curUser.map((user) {
                   return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: [
                         Text(
-                          user['firstname'].toString() +
-                              ' ' +
-                              user['lastname'].toString(),
+                          '${user['firstname']} ${user['lastname']}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'Adumu',
@@ -175,7 +155,7 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
                         Text(
-                          user['major'].toString(),
+                          user['major']?.toString() ?? '',
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'Poppins',
@@ -183,8 +163,7 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
                         Text(
-                          'Member Since ' +
-                              user['created_at'].toString().split('T')[0],
+                          'Member Since ${user['created_at'].toString().split('T')[0]}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'Poppins',
@@ -194,10 +173,9 @@ class _ProfileState extends State<Profile> {
                       ],
                     ),
                   );
-                }),
+                }).toList(),
               ),
             ),
-          //spot for points, leaderboard position, and events attended
           if (!isLoading && !isLoading2 && curUser.isNotEmpty)
             Positioned(
               top: 430,
@@ -209,7 +187,7 @@ class _ProfileState extends State<Profile> {
                   Column(
                     children: [
                       Text(
-                        curUser[0]['points'].toString(),
+                        (curUser[0]['points'] ?? 0).toString(),
                         style: const TextStyle(
                           color: Color(0xFFF2AC02),
                           fontFamily: 'Adumu',
@@ -217,9 +195,9 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      const Text(
                         'POINTS',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Color(0xFFF2AC02),
                           fontFamily: 'Poppins',
                           fontSize: 15,
@@ -227,7 +205,7 @@ class _ProfileState extends State<Profile> {
                       ),
                     ],
                   ),
-                  SizedBox(width: 50),
+                  const SizedBox(width: 50),
                   Column(
                     children: [
                       Text(
@@ -239,9 +217,9 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      const Text(
                         'LEADERBOARD',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Color(0xFFF2AC02),
                           fontFamily: 'Poppins',
                           fontSize: 15,
@@ -249,11 +227,11 @@ class _ProfileState extends State<Profile> {
                       ),
                     ],
                   ),
-                  SizedBox(width: 50),
+                  const SizedBox(width: 50),
                   Column(
                     children: [
                       Text(
-                        curUser[0]['events'].toString(),
+                        (curUser[0]['events_attended'] ?? 0).toString(),
                         style: const TextStyle(
                           color: Color(0xFFF2AC02),
                           fontFamily: 'Adumu',
@@ -261,9 +239,9 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      const Text(
                         'EVENTS',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Color(0xFFF2AC02),
                           fontFamily: 'Poppins',
                           fontSize: 15,
@@ -274,92 +252,73 @@ class _ProfileState extends State<Profile> {
                 ],
               ),
             ),
+          // Username, notifications, settings buttons
           Container(
             alignment: Alignment.bottomCenter,
-            padding: EdgeInsets.only(bottom: 270),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    print('username');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFF2AC02),
-                    textStyle: const TextStyle(fontFamily: 'Poppins'),
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    fixedSize: Size(MediaQuery.sizeOf(context).width - 20, 50),
-                  ),
-                  child: Text(
-                    'USERNAME',
-                    style: TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
+            padding: const EdgeInsets.only(bottom: 270),
+            child: ElevatedButton(
+              onPressed: () {
+                print('username');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF2AC02),
+                textStyle: const TextStyle(fontFamily: 'Poppins'),
+                fixedSize: Size(MediaQuery.sizeOf(context).width - 20, 50),
+              ),
+              child: const Text(
+                'USERNAME',
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-              ],
+              ),
             ),
           ),
           Container(
             alignment: Alignment.bottomCenter,
-            padding: EdgeInsets.only(bottom: 200),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    print('notifications');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFF2AC02),
-                    textStyle: const TextStyle(fontFamily: 'Poppins'),
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    fixedSize: Size(MediaQuery.sizeOf(context).width - 20, 50),
-                  ),
-                  child: Text(
-                    'NOTIFICATIONS',
-                    style: TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
+            padding: const EdgeInsets.only(bottom: 200),
+            child: ElevatedButton(
+              onPressed: () {
+                print('notifications');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF2AC02),
+                textStyle: const TextStyle(fontFamily: 'Poppins'),
+                fixedSize: Size(MediaQuery.sizeOf(context).width - 20, 50),
+              ),
+              child: const Text(
+                'NOTIFICATIONS',
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-              ],
+              ),
             ),
           ),
           Container(
             alignment: Alignment.bottomCenter,
-            padding: EdgeInsets.only(bottom: 130),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    print('settings');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFF2AC02),
-                    textStyle: const TextStyle(fontFamily: 'Poppins'),
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    fixedSize: Size(MediaQuery.sizeOf(context).width - 20, 50),
-                  ),
-                  child: Text(
-                    'SETTINGS',
-                    style: TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
+            padding: const EdgeInsets.only(bottom: 130),
+            child: ElevatedButton(
+              onPressed: () {
+                print('settings');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF2AC02),
+                textStyle: const TextStyle(fontFamily: 'Poppins'),
+                fixedSize: Size(MediaQuery.sizeOf(context).width - 20, 50),
+              ),
+              child: const Text(
+                'SETTINGS',
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-              ],
+              ),
             ),
           ),
-
-          //----------Navbar----------
           Column(
             children: [
               Expanded(child: _pages[_selectedIndex]),
