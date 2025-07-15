@@ -22,7 +22,7 @@ class InputField extends StatelessWidget {
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(30.0)),
         ),
-        labelText: text,
+        hintText: text,
         labelStyle: const TextStyle(
           fontFamily: 'Poppins',
           fontWeight: FontWeight.bold,
@@ -83,7 +83,7 @@ class PasswordInputField extends StatelessWidget {
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(30.0)),
         ),
-        labelText: text,
+        hintText: text,
         labelStyle: const TextStyle(
           fontFamily: 'Poppins',
           fontWeight: FontWeight.bold,
