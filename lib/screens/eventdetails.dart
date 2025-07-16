@@ -72,7 +72,7 @@ class EventDetailsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                //Event Details
+            //------ EVENT DETAILS ------
                 LayoutBuilder(
                   builder:(context, constraints) {
                     final screenHeight = MediaQuery.of(context).size.height;
@@ -89,128 +89,179 @@ class EventDetailsPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              event.name,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontFamily: 'Poppins',
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Text(
+                                    event.name,
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontFamily: 'Poppins',
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                if (event.date != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8, bottom: 6),
+                                    child: RichText(
+                                      text: TextSpan(
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'Poppins',
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          const TextSpan(
+                                            text: 'Date: ',
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          TextSpan(
+                                            text: formatDate(event.date!),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                if (event.time != null)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 6),
+                                    child: RichText(
+                                      text: TextSpan(
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'Poppins',
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          const TextSpan(
+                                            text: 'Time: ',
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          TextSpan(
+                                            text: formatTime(event.time!),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                if (event.location != null)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 6),
+                                    child: RichText(
+                                      text: TextSpan(
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'Poppins',
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          const TextSpan(
+                                            text: 'Location: ',
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          TextSpan(
+                                            text: event.location ?? 'No location found.',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                if (event.description != null)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 6),
+                                    child: RichText(
+                                      text: TextSpan(
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'Poppins',
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          const TextSpan(
+                                            text: 'Description: ',
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          TextSpan(
+                                            text: event.description ?? 'No description found.',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                if (event.pointsWorth != null)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 6),
+                                    child: RichText(
+                                      text: TextSpan(
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'Poppins',
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          const TextSpan(
+                                            text: 'Points: ',
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          TextSpan(
+                                            text: '${event.pointsWorth}',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+
+                          //------ UPLOAD PHOTOS BUTTON ------
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                              child: Container(
+                                alignment: Alignment.center,
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    // function to upload buttons here
+                                    print('upload photos press');
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color.fromARGB(255, 31, 62, 105),
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    textStyle: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.add_a_photo_outlined,
+                                          color: Colors.white,
+                                          size: 30,
+                                        ),
+                                        SizedBox(width: 10),
+                                        const Text(
+                                          'UPLOAD PHOTOS',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                            if (event.date != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8, bottom: 6),
-                                child: RichText(
-                                  text: TextSpan(
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.black,
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text: 'Date: ',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                      TextSpan(
-                                        text: formatDate(event.date!),
-                                      ),
-                                    ] 
-                                  )
-                                )
-                              ),
-                            if (event.time != null)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 6),
-                                child: RichText(
-                                  text: TextSpan(
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.black,
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text: 'Time: ',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                      TextSpan(
-                                        text: formatTime(event.time!),
-                                      ),
-                                    ] 
-                                  )
-                                )
-                              ),
-                            if (event.location != null)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 6),
-                                child: RichText(
-                                  text: TextSpan(
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.black,
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text: 'Location: ',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                      TextSpan(
-                                        text: event.location ?? 'No location found.',
-                                      ),
-                                    ] 
-                                  )
-                                )
-                              ),
-                            if (event.description != null)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 6),
-                                child: RichText(
-                                  text: TextSpan(
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.black,
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text: 'Description: ',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                      TextSpan(
-                                        text: event.description ?? 'No description found.',
-                                      ),
-                                    ] 
-                                  )
-                                )
-                              ),
-                            if (event.pointsWorth != null)
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 6),
-                                child: RichText(
-                                  text: TextSpan(
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.black,
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text: 'Points: ',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                      TextSpan(
-                                        text: '${event.pointsWorth}',
-                                      ),
-                                    ]
-                                  )
-                                )
-                              )
-                          ]
+                          ],
                         ),
                       ),
                     );
