@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shpeucfmobile/landing.dart';
+import 'package:shpeucfmobile/screens/Instagram.dart';
 import 'package:shpeucfmobile/screens/dashboard.dart';
 import 'package:shpeucfmobile/screens/homescreen.dart';
 import 'package:shpeucfmobile/screens/leaderboard.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner:
           false, // Hides the debug banner in the top-right corner
      home: const HomeScreen(),
+     
       routes: {
         '/login': (context) => Login(),
         '/signup': (context) => SignUp(),

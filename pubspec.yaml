@@ -39,6 +39,8 @@ dependencies:
   url_launcher: ^6.3.1
   cupertino_icons: ^1.0.8
   qr_code_scanner_plus: ^2.0.10+1
+  flutter_staggered_animations: ^1.0.0
+  photo_view: ^0.14.0
 
 dev_dependencies:
   flutter_test:
@@ -86,6 +88,8 @@ flutter:
     - lib/images/ProfileBackground.jpeg
     - lib/images/SHPE2.png
     - lib/images/backbutton.png
+    - lib/images/testImage1.jpg
+    - lib/images/test3.jpg
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
