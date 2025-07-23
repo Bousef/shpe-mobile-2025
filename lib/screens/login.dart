@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:shpeucfmobile/screens/ForgotPassword.dart';
 import 'package:shpeucfmobile/screens/admindashboard.dart';
 import 'package:shpeucfmobile/screens/dashboard.dart';
 import 'package:shpeucfmobile/services/firebase_auth_service.dart';
@@ -68,9 +69,11 @@ class LoginState extends State<Login> {
                             padding: const EdgeInsets.only(right: 12),
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, '/');
-                                print('clicked forgot password!');
-                              },
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const ForgotPassword()),
+                                );
+                            },
                               child: const Text(
                                 'Forgot Password?',
                                 style: TextStyle(
@@ -131,7 +134,7 @@ class LoginState extends State<Login> {
                               if (isAdmin) {
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const AdminDashboard()),
+                                  MaterialPageRoute(builder: (context) => const Dashboard()), //change back to AdminDashboard
                                 );
                               } else {
                                 Navigator.pushReplacement(
