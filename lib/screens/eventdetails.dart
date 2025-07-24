@@ -1,11 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shpeucfmobile/models/event.dart';
+import 'package:shpeucfmobile/widgets/event_photo_gallery.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shpeucfmobile/services/firebase_auth_service.dart';
+import 'package:shpeucfmobile/services/supabase_service.dart';
 
-
-class EventDetailsPage extends StatelessWidget {
+class EventDetailsPage extends StatefulWidget {
   final Event event;
 
   const EventDetailsPage({super.key, required this.event});
+
+  @override
+  State<EventDetailsPage> createState() => _EventDetailsPageState();
+}
+
+class _EventDetailsPageState extends State<EventDetailsPage> {
+
+  final supabase = Supabase.instance.client;
+
+  Future<void> _pickAndUploadImages(String eventId) async {
+    final ImagePicker picker = ImagePicker();
+
+    //pick multiple images
+    final List<XFile>? images = await picker.pickMultiImage();
+
+    if (images == null || images.isEmpty) return;
+
+    // get firebase user
+    final firebaseUser = FirebaseAuthService().getCurrentUser();
+    //debug
+    print('Current firebase user: $firebaseUser');
+    if (firebaseUser == null) {
+      print('⚠️ No firebase user logged in! Aborting upload.');
+      return;
+    }
+
+    //get supabase user using firebase uid
+    final firebaseUid = firebaseUser.uid;
+    final userRow = await SupabaseService().getUserByFirebaseUid(firebaseUid);
+    //debug
+    if (userRow == null) {
+      print('⚠️ No matching user in Supabase with Firebase UID: $firebaseUid');
+      return;
+    }
+
+    final userId = userRow['firebase_uid'];
+    // print('supabase user ID: $userId');
+
+    for(final image in images) {
+      final bytes = await image.readAsBytes();
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${image.name}';
+      final filePath = 'photo/$eventId/$fileName';
+
+      try {
+        //upload to supabase storage
+        final storageResponse = await supabase.storage
+          .from('event-photos')
+          .uploadBinary(filePath, bytes);
+
+        final imgURL = supabase.storage
+          .from('event-photos')
+          .getPublicUrl(filePath);
+
+        //insert into photo table
+        await supabase.from('photo').insert({
+          'eventID': eventId,
+          'userID': userId ?? 'anonymous',
+          'imgURL': imgURL,
+        });
+
+        // print('uploaded image: $fileName');
+      } catch (e) {
+        print('Upload error: $e');
+      }
+    }
+  }
 
   String formatDate(DateTime date) {
     const weekdayNames = [
@@ -47,7 +117,7 @@ class EventDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          event.name,
+          widget.event.name,
           style: TextStyle(
             fontSize: 20,
             fontFamily: 'Poppins',
@@ -65,7 +135,7 @@ class EventDetailsPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.network(
-                  event.imageUrl,
+                  widget.event.imageUrl,
                   width: double.infinity,
                   height: 200,
                   fit: BoxFit.cover,
@@ -97,7 +167,7 @@ class EventDetailsPage extends StatelessWidget {
                               children: [
                                 Center(
                                   child: Text(
-                                    event.name,
+                                    widget.event.name,
                                     style: const TextStyle(
                                       fontSize: 24,
                                       fontFamily: 'Poppins',
@@ -107,7 +177,7 @@ class EventDetailsPage extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
-                                if (event.date != null)
+                                if (widget.event.date != null)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 8, bottom: 6),
                                     child: RichText(
@@ -123,13 +193,13 @@ class EventDetailsPage extends StatelessWidget {
                                             style: TextStyle(fontWeight: FontWeight.bold),
                                           ),
                                           TextSpan(
-                                            text: formatDate(event.date!),
+                                            text: formatDate(widget.event.date!),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
-                                if (event.time != null)
+                                if (widget.event.time != null)
                                   Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 6),
                                     child: RichText(
@@ -145,13 +215,13 @@ class EventDetailsPage extends StatelessWidget {
                                             style: TextStyle(fontWeight: FontWeight.bold),
                                           ),
                                           TextSpan(
-                                            text: formatTime(event.time!),
+                                            text: formatTime(widget.event.time!),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
-                                if (event.location != null)
+                                if (widget.event.location != null)
                                   Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 6),
                                     child: RichText(
@@ -167,13 +237,13 @@ class EventDetailsPage extends StatelessWidget {
                                             style: TextStyle(fontWeight: FontWeight.bold),
                                           ),
                                           TextSpan(
-                                            text: event.location ?? 'No location found.',
+                                            text: widget.event.location ?? 'No location found.',
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
-                                if (event.description != null)
+                                if (widget.event.description != null)
                                   Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 6),
                                     child: RichText(
@@ -189,13 +259,13 @@ class EventDetailsPage extends StatelessWidget {
                                             style: TextStyle(fontWeight: FontWeight.bold),
                                           ),
                                           TextSpan(
-                                            text: event.description ?? 'No description found.',
+                                            text: widget.event.description ?? 'No description found.',
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
-                                if (event.pointsWorth != null)
+                                if (widget.event.pointsWorth != null)
                                   Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 6),
                                     child: RichText(
@@ -211,7 +281,7 @@ class EventDetailsPage extends StatelessWidget {
                                             style: TextStyle(fontWeight: FontWeight.bold),
                                           ),
                                           TextSpan(
-                                            text: '${event.pointsWorth}',
+                                            text: '${widget.event.pointsWorth}',
                                           ),
                                         ],
                                       ),
@@ -220,6 +290,8 @@ class EventDetailsPage extends StatelessWidget {
                               ],
                             ),
 
+                            EventPhotoGallery(eventId: widget.event.id),
+
                           //------ UPLOAD PHOTOS BUTTON ------
                             Padding(
                               padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
@@ -227,9 +299,9 @@ class EventDetailsPage extends StatelessWidget {
                                 alignment: Alignment.center,
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     // function to upload buttons here
-                                    print('upload photos press');
+                                    await _pickAndUploadImages(widget.event.id);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color.fromARGB(255, 31, 62, 105),
