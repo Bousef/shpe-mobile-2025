@@ -7,9 +7,10 @@ import 'package:shpeucfmobile/widgets/reactionbutton.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:photo_view/photo_view.dart'; 
 import 'dart:ui';
+import "package:shpeucfmobile/services/photo_service.dart";
 
 
-class Shpestagram extends StatefulWidget {
+class Shpestagram extends StatefulWidget  {
   const Shpestagram({super.key});
 
   @override
@@ -21,21 +22,67 @@ class _ShpestagramState extends State<Shpestagram> {
   int _selectedIndex = 1;
   
   //final FirebaseAuth _auth = FirebaseAuth.instance;
-  //final SupabaseClient supabase = Supabase.instance.client;
+  final SupabaseClient supabase = Supabase.instance.client;
+  late final PhotoService service;
+
   String? userImageUrl;
   String? currentUserName;
   bool _isUserProfileLoading = true; 
   List<Map<String, dynamic>> _eventPosts = [];
+  List<dynamic>? photos;
 
-
-  final List<Widget> _pages = [
-    Center(child: Text('', style: TextStyle(color: Colors.white))),
-    Center(child: Text('', style: TextStyle(color: Colors.white))),
-    Center(child: Text('', style: TextStyle(color: Colors.white))),
-    Center(child: Text('', style: TextStyle(color: Colors.white))),
-    Center(child: Text('', style: TextStyle(color: Colors.white))),
+  @override
+  void initState() {
+    super.initState();
+    service = PhotoService(supabase);
+    _loadPhotos();
+    //TEMPORARY DATA
+    // TEMPORARY STATIC PROFILE DATA
+    userImageUrl = 'lib/images/topOfLeaderboard.svg'; 
+    currentUserName = 'TestUser';
+    _eventPosts = [
+    {
+      'image_url': 'lib/images/test3.jpg',
+      'event': {'name': 'Event'},
+      'user': {'username': 'Guest'},
+    },
+    {
+      'image_url': 'lib/images/shpetest1.png',
+      'event': {'name': 'Another Event'},
+      'user': {'username': 'AnotherUser'},
+    },
+    {
+      'image_url': 'lib/images/testImage1.jpg',
+      'event': {'name': 'Another Event'},
+      'user': {'username': 'AnotherUser'},
+    },
+    
   ];
+   // _fetchProfile();
+   // _fetchPosts();
+  }
 
+  
+Future<void> _loadPhotos() async {
+  try {
+    photos = await service
+        .fetchEventPhotosWithReactions('a8fb5b63-7193-4a6b-a4cb-0163b064ff78');
+
+    // Print the fetched list for a quick smoke-test
+    for (final p in photos!) {
+      debugPrint(
+          'Photo ${p.photoId} • uploader=${p.uploaderName} • reactions=${p.reactions}');
+    }
+  } catch (e) {
+    debugPrint('Error fetching photos: $e');
+  }
+  setState(() {});  // refresh the UI
+}
+
+
+
+
+  
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -109,34 +156,7 @@ class _ShpestagramState extends State<Shpestagram> {
    }
   }*/
 
-  void initState(){
-    
-    super.initState();
-    //TEMPORARY DATA
-    // TEMPORARY STATIC PROFILE DATA
-    userImageUrl = 'lib/images/topOfLeaderboard.svg'; 
-    currentUserName = 'TestUser';
-    _eventPosts = [
-    {
-      'image_url': 'lib/images/test3.jpg',
-      'event': {'name': 'Event'},
-      'user': {'username': 'Guest'},
-    },
-    {
-      'image_url': 'lib/images/shpetest1.png',
-      'event': {'name': 'Another Event'},
-      'user': {'username': 'AnotherUser'},
-    },
-    {
-      'image_url': 'lib/images/testImage1.jpg',
-      'event': {'name': 'Another Event'},
-      'user': {'username': 'AnotherUser'},
-    },
-    
-  ];
-   // _fetchProfile();
-   // _fetchPosts();
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -198,14 +218,14 @@ class _ShpestagramState extends State<Shpestagram> {
           SafeArea(
             child: ListView.builder(
               padding: const EdgeInsets.only(bottom: 15),
-              itemCount: _eventPosts.length > 7 ? 7 : _eventPosts.length,
+              itemCount: photos?.length ?? 0,
               itemBuilder: (context, index) {
-
-                final post = _eventPosts[index];
-                final imageUrl = post['image_url'] ?? 'lib/images/shpetest1.png';
-                final eventName = post['event']?['name'] ?? 'Event';
-                final username = post['user']?['username'] ?? 'guest';
-
+                final photo = photos![index];                 
+                final imageUrl   = photo.imgUrl;
+                final username   = photo.uploaderName ?? 'Guest';
+                final eventName  = 'Event';
+                final reactions = photo.reactions ?? 0; // implement reactions later
+                // final eventName = _eventPosts[index]['event']['name'] ?? 'Unknown Event';
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6.0),
                   child: Column(

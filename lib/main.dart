@@ -10,6 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'firebase_options.dart';
 import 'package:shpeucfmobile/screens/login.dart';
 import 'package:shpeucfmobile/screens/SignUp.dart';
+import 'package:shpeucfmobile/services/photo_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,25 @@ await Firebase.initializeApp(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
+
+  final service = PhotoService(Supabase.instance.client);
+  // Example usage of the PhotoService to fetch photos with reactions
+  // 1. Fetch the list
+  const testEventId = 'a8fb5b63-7193-4a6b-a4cb-0163b064ff78';
+  try {
+    final photos = await service.fetchEventPhotosWithReactions(testEventId);
+
+    // 2. Print each entry
+    debugPrint('Fetched ${photos.length} photos:');
+    for (final p in photos) {
+      debugPrint('Photo ${p.photoId} by ${p.uploaderName} @ ${p.createdAt}');
+      for (final r in p.reactions) {
+        debugPrint('  • ${r.type}: ${r.count}');
+      }
+    }
+  } catch (e) {
+    debugPrint('Error fetching photos: $e');
+  }
 
   runApp(const MyApp());
 }
