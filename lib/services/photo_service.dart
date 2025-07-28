@@ -2,6 +2,7 @@
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shpeucfmobile/services/supabase_service.dart';
+import 'package:shpeucfmobile/services/firebase_auth_service.dart';
 
 
 /// Simple model for a single reaction count.
@@ -77,5 +78,31 @@ class PhotoService {
         reactions: reactions,
       );
     }).toList();
+  }
+
+  Future<void> addReaction({
+    required int photoId,
+    required String reaction,
+  }) async {
+    
+    final firebaseUser = FirebaseAuthService().getCurrentUser();
+    if (firebaseUser == null) {
+       throw Exception('You must be logged in to react.');
+    }
+
+    
+    final res = await _supabase
+        .from('photo_reactions')
+        .insert({
+          'photoID': photoId,
+          'userID': firebaseUser.uid,
+          'reaction': reaction,
+        })
+        .execute();
+
+    
+    if (res.status < 200 || res.status >= 300 || res.data == null) {
+      throw Exception('Failed to add reaction: ${res.data!.message}');
+    }
   }
 }
