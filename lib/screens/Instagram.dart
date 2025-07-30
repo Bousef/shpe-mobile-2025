@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:photo_view/photo_view.dart'; 
 import 'dart:ui';
 import "package:shpeucfmobile/services/photo_service.dart";
+import 'package:shpeucfmobile/widgets/Downloadbutton.dart';
 
 
 class Shpestagram extends StatefulWidget  {
@@ -58,8 +59,7 @@ class _ShpestagramState extends State<Shpestagram> {
     },
     
   ];
-   // _fetchProfile();
-   // _fetchPosts();
+   
   }
 
   
@@ -88,74 +88,6 @@ Future<void> _loadPhotos() async {
       _selectedIndex = index;
     });
   }
-  
-  /*//USER PROFILE PICTURE
-  Future<void> _fetchProfile() async { 
-      final firebaseUser = _auth.currentUser;
-      final firebaseUid = firebaseUser?.uid;
-      
-      if (firebaseUid == null || firebaseUid.isEmpty) {
-        print('No Firebase user logged in. Cannot fetch profile image or username.');
-        setState(() {
-          userImageUrl = 'lib/images/topOfLeaderboard.svg'; // Fallback SVG
-          currentUserName = 'Guest'; // Default username
-          _isUserProfileLoading = false; // Set loading to false as we're done trying
-        });
-        return; // Exit the method early
-      }
-      
-    try{
-
-      final Map<String, dynamic> response = await supabase
-      .from('profiles')
-      .select('avatar_url, username')
-      .eq('id',firebaseUid)
-      .single();
-
-    setState(() {
-        userImageUrl=response['avatar_url']??'lib/images/topOfLeaderboard.svg';
-        currentUserName = response['username'] ?? 'Unknown User';
-        _isUserProfileLoading=false;
-      });
-    }
-    catch(e){
-      print('Error fetching user profile: $e');
-      setState((){
-        userImageUrl='lib/images/topOfLeaderboard.svg';
-        currentUserName='Guest';
-        _isUserProfileLoading=false;
-      });
-    }
-   }
-
-  //POST CONNECTION
-  Future<void> _fetchPosts() async{
-    try{
-      final List<Map<String,dynamic>> data = await Supabase.instance.client
-      .from('photos')
-      .select('image_url,created_at, event(name), user(username)')
-      .order('created_at', ascending: false)
-      .limit(7);
-
-      setState(() {
-        _eventPosts=data;
-      });
-    }
-   catch(e){
-      print('Error fetching event post: $e');
-      setState((){
-      _eventPosts=[{
-        'image_url':'lib/images/shpetest1.png',
-        'event':{'name': 'Fallback Event'},
-        'user':{'username': 'Guest'},
-      },];
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to load posts.')),
-    );
-   }
-  }*/
-
   
 
   @override
@@ -250,28 +182,37 @@ Future<void> _loadPhotos() async {
                             PageRouteBuilder(
                               opaque: false,
                               pageBuilder: (_, __, ___) => Stack(
-                                children:[
-                                BackdropFilter( filter:
-                                ImageFilter.blur(sigmaX: 10, sigmaY: 10), 
-                                child:Container(color: Colors.transparent,),
-                                ),
-                                 
-                                GestureDetector(
-                                  onTap: () => Navigator.pop(context),
-                                  child: Center(
-                                    child: PhotoView(
-                                      imageProvider: imageUrl.isNotEmpty
-                                          ? NetworkImage(imageUrl)
-                                          : const AssetImage('lib/images/shpetest1.png'),
-                                      backgroundDecoration: const BoxDecoration(color: Colors.black),
+                                children: [
+                                  BackdropFilter(
+                                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                    child: Container(color: Colors.black.withOpacity(0.6)),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => Navigator.pop(context),
+                                    child: SizedBox.expand(
+                                      child: PhotoView(
+                                        imageProvider: imageUrl.isNotEmpty
+                                            ? NetworkImage(imageUrl)
+                                            : const AssetImage('lib/images/shpetest1.png') as ImageProvider,
+                                        backgroundDecoration: const BoxDecoration(color: Colors.transparent),
+                                        minScale: PhotoViewComputedScale.contained,
+                                        maxScale: PhotoViewComputedScale.covered * 4.0,
+                                        initialScale: PhotoViewComputedScale.contained,
+                                      ),
                                     ),
                                   ),
-                                ),
+                                  const Positioned(
+                                    bottom: 10,
+                                    right: 10,
+                                    child: Downloadbutton(),
+                                  ),
                                 ],
                               ),
                             ),
                           );
+
                         },
+
                         child: Container(
                           width: MediaQuery.of(context).size.width * 0.85,
                           margin: const EdgeInsets.symmetric(horizontal: 25),
