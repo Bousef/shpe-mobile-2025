@@ -5,6 +5,7 @@ import 'package:shpeucfmobile/widgets/event_photo_gallery.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shpeucfmobile/services/firebase_auth_service.dart';
 import 'package:shpeucfmobile/services/supabase_service.dart';
+import 'package:shpeucfmobile/widgets/shpe_header_text.dart';
 
 class EventDetailsPage extends StatefulWidget {
   final Event event;
@@ -17,6 +18,7 @@ class EventDetailsPage extends StatefulWidget {
 
 class _EventDetailsPageState extends State<EventDetailsPage> {
 
+  final GlobalKey<EventPhotoGalleryState> galleryKey = GlobalKey();
   final supabase = Supabase.instance.client;
 
   Future<void> _pickAndUploadImages(String eventId) async {
@@ -69,6 +71,8 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
           'userID': userId ?? 'anonymous',
           'imgURL': imgURL,
         });
+
+        galleryKey.currentState?.refreshGallery();
 
         // print('uploaded image: $fileName');
       } catch (e) {
@@ -289,8 +293,17 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                                   ),
                               ],
                             ),
+                            SizedBox(height: 20),
+                          //----- PHOTOS -----
+                            //this is temporary until either i figure out font
+                            //    or get image
+                            SHPEHeaderText(text: 'PHOTOS', fontSize: 40),
+                            SizedBox(height: 5),
 
-                            EventPhotoGallery(eventId: widget.event.id),
+                            EventPhotoGallery(
+                              key: galleryKey,
+                              eventId: widget.event.id,
+                            ),
 
                           //------ UPLOAD PHOTOS BUTTON ------
                             Padding(
@@ -304,7 +317,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                                     await _pickAndUploadImages(widget.event.id);
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color.fromARGB(255, 31, 62, 105),
+                                    backgroundColor: const Color.fromARGB(255, 9, 39, 98),
                                     padding: const EdgeInsets.symmetric(vertical: 14),
                                     textStyle: const TextStyle(
                                       fontFamily: 'Poppins',
