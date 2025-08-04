@@ -1,5 +1,4 @@
-
-  //for firebase.json file, REPLACE B4 PUSHING!!!!
+//for firebase.json file, REPLACE B4 PUSHING!!!!
  //{"flutter":{"platforms":{"android":{"default":{"projectId":"shpemobile-5ac79","appId":"1:442807039058:android:1dff7903f638bb64db5b8b","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"shpemobile-5ac79","appId":"1:442807039058:ios:e86012146075bd86db5b8b","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"shpemobile-5ac79","configurations":{"android":"1:442807039058:android:1dff7903f638bb64db5b8b","ios":"1:442807039058:ios:e86012146075bd86db5b8b"}}}}}}
 
  //USE THIS ONE FOR WINDOWS IN firebase.json
@@ -49,6 +48,15 @@ class FirebaseAuthService {
   /// Get Firebase ID token
   Future<String?> getIdToken() async {
     return await _auth.currentUser?.getIdToken();
+  }
+
+  /// Send password reset email
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw Exception("Password reset failed: ${e.message}");
+    }
   }
 } 
 

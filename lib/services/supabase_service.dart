@@ -93,5 +93,16 @@ class SupabaseService {
      return avatars[index];
 
   }
+
+  /// Check if email exists in the users table
+  Future<bool> emailExists(String email) async {
+    final data = await _client
+        .from('users')
+        .select('email')
+        .eq('email', email)
+        .maybeSingle();
+    
+    return data != null;
+  }
 }
 

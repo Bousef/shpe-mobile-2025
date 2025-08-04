@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shpeucfmobile/widgets/custom_inputFields.dart';
+import 'package:shpeucfmobile/services/firebase_auth_service.dart';
+import 'package:shpeucfmobile/services/supabase_service.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
@@ -10,6 +12,8 @@ class ForgotPassword extends StatefulWidget {
 
 class _ForgotPassword extends State<ForgotPassword> {
   final TextEditingController emailController = TextEditingController();
+  final FirebaseAuthService _authService = FirebaseAuthService();
+  final SupabaseService _supabaseService = SupabaseService();
   String? errorMessage;
   bool _isLoading = false;
 
@@ -44,7 +48,18 @@ class _ForgotPassword extends State<ForgotPassword> {
         errorMessage = null;
       });
 
-      //INSERT FIREBASE SENDPASSWORDRESETEMAIL() METHOD
+      // Check if email exists in the database
+      bool emailFound = await _supabaseService.emailExists(email);
+      
+      if (!emailFound) {
+        setState(() {
+          errorMessage = "Email not found in our system";
+        });
+        return;
+      }
+
+      // Send password reset email using Firebase Auth
+      await _authService.sendPasswordResetEmail(email);
 
       setState(() {
         errorMessage = "Password reset email sent!";
