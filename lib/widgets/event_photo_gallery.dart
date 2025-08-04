@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:ui';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class EventPhotoGallery extends StatefulWidget {
   final String eventId; // This should be a UUID string
@@ -16,6 +21,41 @@ class EventPhotoGalleryState extends State<EventPhotoGallery> {
   int currentPage = 0;
   final int itemsPerPage = 4;
   int refreshTrigger = 0;
+
+  Future<void> _downloadImage(String imageUrl) async {
+    try {
+      // Ask for permission (Android)
+      var status = await Permission.storage.request();
+      if (!status.isGranted) {
+        print('storage permission denied');
+        return;
+      }
+
+      // Download image data
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode != 200) {
+        print('failed to download image');
+        return;
+      }
+
+      final result = await ImageGallerySaver.saveImage(
+        response.bodyBytes,
+        quality: 100,
+        name: "event_photo_${DateTime.now().millisecondsSinceEpoch}",
+      );
+
+      if (result['isSuccess']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Image saved.")),
+        );
+      } else {
+        print("Failed to save image: $result");
+      }
+    } catch (e) {
+      print('Download failed: $e');
+    }
+  }
+
 
   void _showFullScreenImage(BuildContext context, String imageUrl) {
     showDialog(
@@ -37,16 +77,42 @@ class EventPhotoGalleryState extends State<EventPhotoGallery> {
 
               // Centered full-screen image
               Center(
-                child: InteractiveViewer(
-                  panEnabled: true,
-                  minScale: 0.5,
-                  maxScale: 4,
-                  child: ClipRRect(
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.contain,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InteractiveViewer(
+                      panEnabled: true,
+                      minScale: 0.5,
+                      maxScale: 4,
+                      child: ClipRRect(
+                        child: Image.network(
+                          imageUrl,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        await _downloadImage(imageUrl);
+                      },
+                      icon: const Icon(Icons.download, color: Colors.white),
+                      label: const Text(
+                        "Download",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Poppins',
+                        )
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black87,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        )
+                      ),
+                    )
+                  ],
                 ),
               ),
 
