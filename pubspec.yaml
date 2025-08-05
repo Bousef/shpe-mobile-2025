@@ -41,6 +41,11 @@ dependencies:
   qr_code_scanner_plus: ^2.0.10+1
   flutter_staggered_animations: ^1.0.0
   photo_view: ^0.14.0
+  image_gallery_saver: ^2.0.3
+  permission_handler: ^11.3.0
+  path_provider: ^2.1.2
+  http: ^0.13.5
+
 
 dev_dependencies:
   flutter_test:

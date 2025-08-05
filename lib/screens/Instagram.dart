@@ -8,7 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:photo_view/photo_view.dart'; 
 import 'dart:ui';
 import "package:shpeucfmobile/services/photo_service.dart";
-import 'package:shpeucfmobile/widgets/Downloadbutton.dart';
+import 'package:shpeucfmobile/widgets/downloadbutton.dart';
 
 
 class Shpestagram extends StatefulWidget  {
@@ -201,10 +201,10 @@ Future<void> _loadPhotos() async {
                                       ),
                                     ),
                                   ),
-                                  const Positioned(
+                                  Positioned(
                                     bottom: 10,
                                     right: 10,
-                                    child: Downloadbutton(),
+                                    child: Downloadbutton(imageUrl: imageUrl)
                                   ),
                                 ],
                               ),
