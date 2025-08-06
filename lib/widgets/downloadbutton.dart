@@ -82,22 +82,54 @@ class _DownloadbuttonState extends State<Downloadbutton> {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
+    return ElevatedButton.icon(
       onPressed: _Tap,
-      iconSize: 30,
       icon: _isDownloading
-          ? const SizedBox(
-              width: 35,
-              height: 35,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            )
-          : Icon(
-              _downloaded ? Icons.cloud_done : Icons.cloud_download,
-              color: _downloaded ? const Color(0xFFF2AC02) : Colors.white,
+        ? const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             ),
+        )
+        : Icon(
+            _downloaded ? Icons.download_done : Icons.download, color: Colors.white
+          ),
+      label: const Text(
+        'Download',
+        style: TextStyle(
+          color: Colors.white,
+          fontFamily: 'Poppins',
+        )
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.black87,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        )
+      ),
     );
+
+
+    // --- OLD DOWNLOAD BUTTON ---
+    // return IconButton(
+    //   onPressed: _Tap,
+    //   iconSize: 30,
+    //   icon: _isDownloading
+    //       ? const SizedBox(
+    //           width: 35,
+    //           height: 35,
+    //           child: CircularProgressIndicator(
+    //             strokeWidth: 3,
+    //             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+    //           ),
+    //         )
+    //       : Icon(
+    //           _downloaded ? Icons.cloud_done : Icons.cloud_download,
+    //           color: _downloaded ? const Color(0xFFF2AC02) : Colors.white,
+    //         ),
+    // );
   }
 }

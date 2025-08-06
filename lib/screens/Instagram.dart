@@ -9,6 +9,7 @@ import 'package:photo_view/photo_view.dart';
 import 'dart:ui';
 import "package:shpeucfmobile/services/photo_service.dart";
 import 'package:shpeucfmobile/widgets/downloadbutton.dart';
+import 'dart:async';
 
 
 class Shpestagram extends StatefulWidget  {
@@ -176,41 +177,83 @@ Future<void> _loadPhotos() async {
                       ),
                       
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
+                          double aspectRatio = 1; // fallback
+
+                          // Get actual image dimensions
+                          try {
+                            final ImageProvider provider = imageUrl.isNotEmpty
+                                ? NetworkImage(imageUrl)
+                                : const AssetImage('lib/images/shpetest1.png') as ImageProvider;
+
+                            final completer = Completer<Size>();
+                            final stream = provider.resolve(const ImageConfiguration());
+                            stream.addListener(
+                              ImageStreamListener((ImageInfo info, bool _) {
+                                completer.complete(
+                                  Size(info.image.width.toDouble(), info.image.height.toDouble()),
+                                );
+                              }),
+                            );
+
+                            final size = await completer.future;
+                            aspectRatio = size.width / size.height;
+                          } catch (_) {}
+
                           Navigator.push(
                             context,
                             PageRouteBuilder(
                               opaque: false,
-                              pageBuilder: (_, __, ___) => Stack(
-                                children: [
-                                  BackdropFilter(
-                                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                                    child: Container(color: Colors.black.withOpacity(0.6)),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () => Navigator.pop(context),
-                                    child: SizedBox.expand(
-                                      child: PhotoView(
-                                        imageProvider: imageUrl.isNotEmpty
-                                            ? NetworkImage(imageUrl)
-                                            : const AssetImage('lib/images/shpetest1.png') as ImageProvider,
-                                        backgroundDecoration: const BoxDecoration(color: Colors.transparent),
-                                        minScale: PhotoViewComputedScale.contained,
-                                        maxScale: PhotoViewComputedScale.covered * 4.0,
-                                        initialScale: PhotoViewComputedScale.contained,
+                              pageBuilder: (_, __, ___) {
+                                return Stack(
+                                  children: [
+                                    // Single tap anywhere on background closes
+                                    GestureDetector(
+                                      onTap: () => Navigator.pop(context),
+                                      child: BackdropFilter(
+                                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                        child: Container(color: Colors.black.withOpacity(0.6)),
                                       ),
                                     ),
-                                  ),
-                                  Positioned(
-                                    bottom: 10,
-                                    right: 10,
-                                    child: Downloadbutton(imageUrl: imageUrl)
-                                  ),
-                                ],
-                              ),
+
+                                    // Photo + download button centered vertically
+                                    Center(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {}, // prevent close when tapping photo
+                                            child: ConstrainedBox(
+                                              constraints: BoxConstraints(
+                                                maxHeight: MediaQuery.of(context).size.height * 0.8,
+                                                maxWidth: MediaQuery.of(context).size.width * 0.95,
+                                              ),
+                                              child: AspectRatio(
+                                                aspectRatio: aspectRatio,
+                                                child: PhotoView(
+                                                  imageProvider: imageUrl.isNotEmpty
+                                                      ? NetworkImage(imageUrl)
+                                                      : const AssetImage('lib/images/shpetest1.png')
+                                                          as ImageProvider,
+                                                  backgroundDecoration:
+                                                      const BoxDecoration(color: Colors.transparent),
+                                                  minScale: PhotoViewComputedScale.contained,
+                                                  maxScale: PhotoViewComputedScale.covered * 4.0,
+                                                  initialScale: PhotoViewComputedScale.contained,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Downloadbutton(imageUrl: imageUrl),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                           );
-
                         },
 
                         child: Container(
