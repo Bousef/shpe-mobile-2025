@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:photo_view/photo_view.dart';
 
 class EventPhotoGallery extends StatefulWidget {
   final String eventId; // This should be a UUID string
@@ -60,73 +61,76 @@ class EventPhotoGalleryState extends State<EventPhotoGallery> {
   void _showFullScreenImage(BuildContext context, String imageUrl) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.7),
+      barrierColor: Colors.black.withOpacity(0.8),
+      barrierDismissible: true,
       builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: EdgeInsets.zero,
-          child: Stack(
-            children: [
-              // Blurred background
-              Positioned.fill(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(color: Colors.black.withOpacity(0.3)),
-                ),
-              ),
-
-              // Centered full-screen image
-              Center(
-                child: Column(
+        return GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: EdgeInsets.zero,
+            child: Stack(
+              fit: StackFit.expand,
+              alignment: Alignment.center,
+              children: [
+                // Centered full-screen image
+                Column(
                   mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    InteractiveViewer(
-                      panEnabled: true,
-                      minScale: 0.5,
-                      maxScale: 4,
-                      child: ClipRRect(
-                        child: Image.network(
-                          imageUrl,
-                          fit: BoxFit.contain,
+                    GestureDetector(
+                      onTap: () {},
+                      child: InteractiveViewer(
+                        panEnabled: true,
+                        minScale: 0.5,
+                        maxScale: 4,
+                        child: ClipRRect(
+                          child: Image.network(
+                            imageUrl,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        await _downloadImage(imageUrl);
-                      },
-                      icon: const Icon(Icons.download, color: Colors.white),
-                      label: const Text(
-                        "Download",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Poppins',
-                        )
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black87,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        )
+                    GestureDetector(
+                      onTap: () {},
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          await _downloadImage(imageUrl);
+                        },
+                        icon: const Icon(Icons.download, color: Colors.white),
+                        label: const Text(
+                          "Download",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Poppins',
+                          )
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black87,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          )
+                        ),
                       ),
                     )
                   ],
                 ),
-              ),
-
-              // Close button
-              // TODO: see if theres a way to get icon just above pic instead of hardcoded
-              Positioned(
-                top: 20,
-                right: 20,
-                child: IconButton(
-                  icon: Icon(Icons.close, color: Colors.white, size: 30),
-                  onPressed: () => Navigator.of(context).pop(),
+          
+                // Close button
+                // TODO: see if theres a way to get icon just above pic instead of hardcoded
+                Positioned(
+                  top: 20,
+                  right: 20,
+                  child: IconButton(
+                    icon: Icon(Icons.close, color: Colors.white, size: 30),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
