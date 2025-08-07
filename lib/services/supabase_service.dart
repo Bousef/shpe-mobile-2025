@@ -91,7 +91,9 @@ class SupabaseService {
      final index = hash[0] % 9;
 
      return avatars[index];
-
   }
+
+  // fetch all picture relate to event
+  
 }
 

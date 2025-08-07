@@ -1,3 +1,5 @@
+// File: lib/models/event.dart
+// Here is where we define the model
 class Event {
   final String id;
   final String name;
@@ -27,7 +29,7 @@ class Event {
         id: json['id'] as String,
         name: json['name'] as String? ?? '',
         imageUrl: json['image_url'] as String? ??
-            'https://picsum.photos/seed/${json['id']}/600/400',
+            'https://picsum.photos/seed/${json['id']}/600/400', // geneerate a placeholder image if none is provided
         date: json['event_date'] != null
             ? DateTime.parse(json['event_date'] as String)
             : null,
@@ -39,3 +41,5 @@ class Event {
         location: json['location'] as String?,
       );
 }
+
+

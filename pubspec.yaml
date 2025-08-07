@@ -55,6 +55,8 @@ flutter:
     - lib/images/ProfileBackground.jpeg
     - lib/images/SHPE2.png
     - lib/images/backbutton.png
+    - lib/images/testImage1.jpg
+    - lib/images/test3.jpg
 
   fonts:
     - family: Poppins

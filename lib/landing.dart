@@ -214,68 +214,6 @@ class _LandingState extends State<Landing> {
             ),
           ),
 
-// -----------------Leaderboards HERE -----------
-          // Positioned(
-          //   bottom: screenHeight * 0.12,
-          //   left: 0,
-          //   right: 0,
-          //   child: Column(
-          //     mainAxisAlignment: MainAxisAlignment.start,
-          //     children: [
-          //       Image.asset(
-          //         'lib/images/leaderboardWord2.png',
-          //         width: screenWidth * 0.75,
-          //         height: 45,
-          //         fit: BoxFit.contain,
-          //       ),
-          //       SizedBox(height: 10),
-          //       if (!isLoading && topUsers.isNotEmpty)
-          //         Row(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           children: List.generate(topUsers.length, (index) {
-          //             final user = topUsers[index];
-          //             final img = _service.getAvatarUrl(user['firstname']);
-                      
-          //             return Padding(
-          //               padding: EdgeInsets.symmetric(
-          //                 horizontal: screenWidth * 0.015,
-          //               ),
-          //               child: Column(
-          //                 children: [
-          //                   ClipOval(
-          //                     child: SizedBox(
-          //                       width: screenWidth * 0.15,
-          //                       height: screenWidth * 0.17,
-          //                     child: SvgPicture.network(
-          //                       img,
-          //                       fit: BoxFit.cover,
-                                
-          //                     ),
-          //                     ),
-          //                   ),
-          //                   const SizedBox(height: 4),
-          //                   Text(
-          //                     user['firstname'],
-          //                     style: const TextStyle(
-          //                       color: Colors.white,
-          //                       fontWeight: FontWeight.bold, 
-          //                       )
-          //                   ),
-          //                   Text(
-          //                     user['points'].toString(),
-          //                     style: const TextStyle(
-          //                       color: Colors.white,
-          //                       fontWeight: FontWeight.bold,
-          //                     ),
-          //                   ),
-          //                 ],
-          //               ),
-          //             );
-          //           }),
-          //         ),
-          //     ],
-          //   ),
-          // ),
         ],
       ),
     );

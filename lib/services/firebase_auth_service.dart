@@ -50,7 +50,7 @@ class FirebaseAuthService {
   Future<String?> getIdToken() async {
     return await _auth.currentUser?.getIdToken();
   }
-} 
+}
 
 /*import 'package:firebase_auth/firebase_auth.dart';
 

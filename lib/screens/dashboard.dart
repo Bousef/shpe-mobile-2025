@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shpeucfmobile/screens/Instagram.dart';
 import '../widgets/custom_bottom_nav_bar.dart'; // update if path differs
 import 'package:shpeucfmobile/landing.dart';
 import 'package:shpeucfmobile/screens/CodeScanner.dart';
@@ -20,7 +21,7 @@ class _DashboardState extends State<Dashboard> {
 
   final List<Widget> _pages = [
     Center(child: Landing()),
-    Center(child: Text('Instagram Page', style: TextStyle(color: Colors.white))),
+    Center(child: Shpestagram()),
     Center(child: Text('Calendar Page', style: TextStyle(color: Colors.white))),
     CodeScanner(), // ✅ here!,
     Center(child: Text('Members Page', style: TextStyle(color: Colors.white))),
