@@ -52,7 +52,6 @@ class _LandingState extends State<Landing> {
 
   
 
-// TODO: fix issues with scaling (maybe try spaceAround?)
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;

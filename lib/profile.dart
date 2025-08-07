@@ -38,18 +38,19 @@ class _ProfileState extends State<Profile> {
         return;
       }
 
-      final userInfo = await _service.getUserByFirebaseUid(firebaseUid);
+      final Map<String, dynamic> userInfo =
+        await Supabase.instance.client
+          .from('users')
+          .select('firstname, lastname, points, created_at, events_attended, major')
+          .eq('id', userId)
+          .single();
 
-      if (userInfo != null) {
-        setState(() {
-          curUser = [userInfo];
-          isLoading = false;
-          print('curUser = $curUser');
+      setState(() {
+        curUser = [userInfo];
+        isLoading = false;
+        print('curUser = $curUser');
         });
-      } else {
-        print('User not found in Supabase');
-        setState(() => isLoading = false);
-      }
+
     } catch (error) {
       print('Error fetching user: $error');
       setState(() => isLoading = false);

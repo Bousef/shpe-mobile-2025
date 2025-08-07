@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:shpeucfmobile/landing.dart';
 import 'package:shpeucfmobile/screens/admindashboard.dart';
+import 'package:shpeucfmobile/screens/dashboard.dart';
+import 'package:shpeucfmobile/services/firebase_auth_service.dart';
 import 'package:shpeucfmobile/services/supabase_service.dart';
 import 'package:shpeucfmobile/widgets/custom_button.dart';
 import 'package:shpeucfmobile/widgets/custom_inputFields.dart';
-import 'package:shpeucfmobile/screens/homescreen.dart';
-import 'package:shpeucfmobile/screens/dashboard.dart';
-import 'package:shpeucfmobile/services/firebase_auth_service.dart';
 
 final supabaseService = SupabaseService();
 
@@ -21,6 +19,7 @@ class Login extends StatefulWidget {
 class LoginState extends State<Login> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  String? errorMessage; // 👈 Add error message state
 
   @override
   void dispose() {
@@ -36,7 +35,6 @@ class LoginState extends State<Login> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background image
           Image.asset('lib/images/background.png', fit: BoxFit.cover),
 
           SafeArea(
@@ -50,11 +48,9 @@ class LoginState extends State<Login> {
                   child: Center(
                     child: Column(
                       children: [
-                        // Header
                         const SHPEHeaderText(text: 'WELCOME BACK'),
                         const SizedBox(height: 210),
 
-                        // Email and password input fields
                         InputField(
                           text: 'UCF Email',
                           controller: emailController,
@@ -66,7 +62,6 @@ class LoginState extends State<Login> {
                         ),
                         const SizedBox(height: 5),
 
-                        // Forgot password link
                         Align(
                           alignment: Alignment.centerRight,
                           child: Padding(
@@ -93,7 +88,6 @@ class LoginState extends State<Login> {
                   ),
                 ),
 
-                // Login button and sign-up redirect
                 Positioned(
                   bottom: 20,
                   left: 0,
@@ -106,42 +100,65 @@ class LoginState extends State<Login> {
                           backgroundColor: const Color(0xFFF2AC02),
                           textColor: const Color(0xFFF1F3F7),
                           onPressed: () async {
+                            setState(() {
+                              errorMessage = null; // Clear any previous error
+                            });
+
                             try {
-                              //Logic to login in with firebase auth
-                              final fbUser = await FirebaseAuthService().login(emailController.text.trim(), passwordController.text.trim());
+                              final fbUser = await FirebaseAuthService().login(
+                                emailController.text.trim(),
+                                passwordController.text.trim(),
+                              );
 
-                              if(fbUser == null){ 
-                                //TODO add a notification saying email or password is wrong
-                                }
+                              if (fbUser == null) {
+                                setState(() {
+                                  errorMessage = "Invalid email or password. Please try again.";
+                                });
+                                return;
+                              }
 
-                              final userRole = await supabaseService.fetchUserRole(fbUser!.uid);
-                              final isAdmin = userRole?['is_admin'] as bool? ?? false;
-                              final position = userRole?['position'] as String?;
+                              final userRole = await supabaseService.fetchUserRole(fbUser.uid);
 
-                              if(isAdmin){
+                              if (userRole == null) {
+                                setState(() {
+                                  errorMessage = "User not found in our database.";
+                                });
+                                return;
+                              }
+
+                              final isAdmin = userRole['is_admin'] as bool? ?? false;
+
+                              if (isAdmin) {
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const AdminDashboard()),
-                                   );
-                              } else{
+                                  MaterialPageRoute(builder: (context) => const Admindashboard()),
+                                );
+                              } else {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(builder: (context) => const Dashboard()),
-                                   );
+                                );
                               }
-                    
                             } catch (e) {
-                              print('Navigation error: $e');
-                              
-                              // for testing just let user pass but in the future remove this 
-                              Navigator.pushReplacement(   
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const Dashboard()),
-                                  );
+                              print('Login error: $e');
+                              setState(() {
+                                errorMessage = "Invalid email or password. Please try again.";
+                              });
                             }
                           },
                         ),
+                        if (errorMessage != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: Text(
+                              errorMessage!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontFamily: 'Poppins',
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
                         const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -184,7 +201,6 @@ class LoginState extends State<Login> {
   }
 }
 
-// Header font widget
 class SHPEHeaderText extends StatelessWidget {
   final String text;
 
@@ -197,7 +213,6 @@ class SHPEHeaderText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Fill
         Text(
           text,
           style: const TextStyle(
@@ -206,7 +221,6 @@ class SHPEHeaderText extends StatelessWidget {
             color: Color(0xFFF2AC02),
           ),
         ),
-        // Outline
         Text(
           text,
           style: TextStyle(
