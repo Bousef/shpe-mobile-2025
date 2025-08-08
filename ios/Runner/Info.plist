@@ -51,5 +51,12 @@
 	</array>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+		<string>This app needs access to your photo library </string>
+
+	<key>NSCameraUsageDescription</key>
+	<key>NSMicrophoneUsageDescription </key>
+
 </dict>
 </plist>
