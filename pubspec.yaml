@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_staggered_animations: ^1.1.1 
 
   firebase_core: ^3.15.1
   firebase_auth: ^5.6.2
@@ -18,16 +19,17 @@ dependencies:
   url_launcher: ^6.3.1
   cupertino_icons: ^1.0.8
   qr_code_scanner_plus: ^2.0.10+1
-  image_picker: ^1.1.2
-  pretty_qr_code: ^3.5.0
-  gallery_saver: ^2.3.2
+  image_picker: ^1.0.7
+  image_gallery_saver: ^2.0.3
+  permission_handler: ^11.3.0
   path_provider: ^2.1.2
-  permission_handler: ^12.0.1
+  http: ^0.13.5
+  photo_view: ^0.15.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
+  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true
@@ -54,6 +56,8 @@ flutter:
     - lib/images/ProfileBackground.jpeg
     - lib/images/SHPE2.png
     - lib/images/backbutton.png
+    - lib/images/testImage1.jpg
+    - lib/images/test3.jpg
 
   fonts:
     - family: Poppins
