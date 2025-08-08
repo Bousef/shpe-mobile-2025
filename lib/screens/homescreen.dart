@@ -3,7 +3,7 @@ import 'package:shpeucfmobile/widgets/custom_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shpeucfmobile/screens/login.dart';
 import 'package:shpeucfmobile/screens/SignUp.dart';
-
+import 'package:shpeucfmobile/screens/leaderboard.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -56,6 +56,21 @@ class HomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const SignUp()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 19), // Spacing between buttons
+                  CustomButton(
+                    text: 'Leaderboard',
+                    backgroundColor: Color(0xFF2E8B57),
+                    textColor: Color(0xFFF1F3F7),
+                    //Go to Leaderboard page
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LeaderboardScreen(),
+                        ),
                       );
                     },
                   ),

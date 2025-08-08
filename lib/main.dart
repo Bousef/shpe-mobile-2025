@@ -15,9 +15,7 @@ Future<void> main() async {
 
   await dotenv.load(fileName: ".env");
 
-await Firebase.initializeApp(
-  options: DefaultFirebaseOptions.currentPlatform,
-);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
@@ -27,23 +25,21 @@ await Firebase.initializeApp(
   runApp(const MyApp());
 }
 
-
 // Define a stateless widget called MyApp
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
   @override
   Widget build(BuildContext context) {
-    
     return MaterialApp(
       debugShowCheckedModeBanner:
           false, // Hides the debug banner in the top-right corner
-     home: const HomeScreen(),
+      home: const HomeScreen(),
       routes: {
         '/login': (context) => Login(),
         '/signup': (context) => SignUp(),
-      }
+        '/leaderboard': (context) => LeaderboardScreen(),
+      },
     );
   }
 }

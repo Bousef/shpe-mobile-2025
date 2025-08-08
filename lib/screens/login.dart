@@ -82,7 +82,7 @@ class LoginState extends State<Login> {
                               ),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -112,37 +112,47 @@ class LoginState extends State<Login> {
 
                               if (fbUser == null) {
                                 setState(() {
-                                  errorMessage = "Invalid email or password. Please try again.";
+                                  errorMessage =
+                                      "Invalid email or password. Please try again.";
                                 });
                                 return;
                               }
 
-                              final userRole = await supabaseService.fetchUserRole(fbUser.uid);
+                              final userRole = await supabaseService
+                                  .fetchUserRole(fbUser.uid);
 
                               if (userRole == null) {
                                 setState(() {
-                                  errorMessage = "User not found in our database.";
+                                  errorMessage =
+                                      "User not found in our database.";
                                 });
                                 return;
                               }
 
-                              final isAdmin = userRole['is_admin'] as bool? ?? false;
+                              final isAdmin =
+                                  userRole['is_admin'] as bool? ?? false;
 
                               if (isAdmin) {
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const AdminDashboard()),
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => const Admindashboard(),
+                                  ),
                                 );
                               } else {
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const Dashboard()),
+                                  MaterialPageRoute(
+                                    builder: (context) => const Dashboard(),
+                                  ),
                                 );
                               }
                             } catch (e) {
                               print('Login error: $e');
                               setState(() {
-                                errorMessage = "Invalid email or password. Please try again.";
+                                errorMessage =
+                                    "Invalid email or password. Please try again.";
                               });
                             }
                           },
@@ -187,7 +197,7 @@ class LoginState extends State<Login> {
                               ),
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -204,10 +214,7 @@ class LoginState extends State<Login> {
 class SHPEHeaderText extends StatelessWidget {
   final String text;
 
-  const SHPEHeaderText({
-    super.key,
-    required this.text,
-  });
+  const SHPEHeaderText({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -226,10 +233,11 @@ class SHPEHeaderText extends StatelessWidget {
           style: TextStyle(
             fontFamily: 'Adumu',
             fontSize: 45,
-            foreground: Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 2
-              ..color = Colors.black,
+            foreground:
+                Paint()
+                  ..style = PaintingStyle.stroke
+                  ..strokeWidth = 2
+                  ..color = Colors.black,
           ),
         ),
       ],

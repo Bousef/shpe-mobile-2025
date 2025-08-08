@@ -93,8 +93,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   children: [
                     Image.asset(
                       'lib/images/topOfLeaderboard.png',
-                      width: 60,
-                      height: 60,
+                      width: 1,
+                      height: 1,
                     ),
                     const SizedBox(width: 10),
                     SvgPicture.asset('lib/images/SHPE_Logo.svg', width: 100),
