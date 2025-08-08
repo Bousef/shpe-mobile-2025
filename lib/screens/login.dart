@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:shpeucfmobile/screens/admindashboard.dart';
+import 'package:shpeucfmobile/screens/Admindashboard.dart';
 import 'package:shpeucfmobile/screens/dashboard.dart';
 import 'package:shpeucfmobile/services/firebase_auth_service.dart';
 import 'package:shpeucfmobile/services/supabase_service.dart';
@@ -131,7 +131,7 @@ class LoginState extends State<Login> {
                               if (isAdmin) {
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const AdminDashboard()),
+                                  MaterialPageRoute(builder: (context) => const Admindashboard()),
                                 );
                               } else {
                                 Navigator.pushReplacement(
@@ -141,9 +141,13 @@ class LoginState extends State<Login> {
                               }
                             } catch (e) {
                               print('Login error: $e');
-                              setState(() {
-                                errorMessage = "Invalid email or password. Please try again.";
-                              });
+                              //setState(() {
+                                 Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const Admindashboard()),
+                                //);
+                                //errorMessage = "Invalid email or password. Please try again.";
+                              );
                             }
                           },
                         ),

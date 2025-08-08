@@ -18,6 +18,11 @@ dependencies:
   url_launcher: ^6.3.1
   cupertino_icons: ^1.0.8
   qr_code_scanner_plus: ^2.0.10+1
+  image_picker: ^1.1.2
+  pretty_qr_code: ^3.5.0
+  gallery_saver: ^2.3.2
+  path_provider: ^2.1.2
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:

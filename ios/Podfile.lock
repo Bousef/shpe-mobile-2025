@@ -33,6 +33,8 @@ PODS:
   - FirebaseCoreInternal (11.15.0):
     - "GoogleUtilities/NSData+zlib (~> 8.1)"
   - Flutter (1.0.0)
+  - gallery_saver (0.0.1):
+    - Flutter
   - GoogleUtilities/AppDelegateSwizzler (8.1.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -55,10 +57,14 @@ PODS:
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
   - GTMSessionFetcher/Core (4.5.0)
+  - image_picker_ios (0.0.1):
+    - Flutter
   - MTBBarcodeScanner (5.0.11)
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - permission_handler_apple (9.3.0):
+    - Flutter
   - qr_code_scanner_plus (0.2.6):
     - Flutter
     - MTBBarcodeScanner
@@ -74,7 +80,10 @@ DEPENDENCIES:
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - Flutter (from `Flutter`)
+  - gallery_saver (from `.symlinks/plugins/gallery_saver/ios`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - qr_code_scanner_plus (from `.symlinks/plugins/qr_code_scanner_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -102,8 +111,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_core/ios"
   Flutter:
     :path: Flutter
+  gallery_saver:
+    :path: ".symlinks/plugins/gallery_saver/ios"
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
   qr_code_scanner_plus:
     :path: ".symlinks/plugins/qr_code_scanner_plus/ios"
   shared_preferences_foundation:
@@ -123,10 +138,13 @@ SPEC CHECKSUMS:
   FirebaseCoreExtension: edbd30474b5ccf04e5f001470bdf6ea616af2435
   FirebaseCoreInternal: 9afa45b1159304c963da48addb78275ef701c6b4
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  gallery_saver: 1d68d1818df11b1afa84a97d1a530463753e92e3
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMSessionFetcher: fc75fc972958dceedee61cb662ae1da7a83a91cf
+  image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   qr_code_scanner_plus: 7e087021bc69873140e0754750eb87d867bed755
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
