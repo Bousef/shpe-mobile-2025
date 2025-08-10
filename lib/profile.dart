@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shpeucfmobile/services/supabase_service.dart';
 import 'package:shpeucfmobile/widgets/custom_bottom_nav_bar.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -18,6 +19,7 @@ class _ProfileState extends State<Profile> {
   bool isLoading2 = true;
   int _selectedIndex = 0;
   int leaderboardPosition = 0;
+  final supabase = Supabase.instance.client;
   final SupabaseService _service = SupabaseService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 

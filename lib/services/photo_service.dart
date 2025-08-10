@@ -33,36 +33,40 @@ class PhotoService {
 
   /// Fetches all photos for [eventId] along with pre-aggregated reaction stats.
   Future<List<PhotoWithReactions>> fetchEventPhotosWithReactions(String eventId) async {
-    try {
-      final List<dynamic> data = await _supabase
+    // 1️⃣ Query the materialized view for this event
+    dynamic res;
+    try{
+      res = await _supabase
           .from('event_photo_reaction_stats')
           .select()
           .eq('event_id', eventId)
           .order('photo_created_at');
-
-      return data.map((raw) {
-        final row = raw as Map<String, dynamic>;
-
-        final imgUrl = row['img_url'] as String;
-        final uploaderName = row['uploader_name'] as String?;
-        final createdAt = DateTime.parse(row['photo_created_at'] as String);
-
-        final reactionsJson = (row['reactions'] as List<dynamic>).cast<Map<String, dynamic>>();
-        final reactions = reactionsJson
-            .map((j) => Reaction(j['reaction'] as String, j['count'] as int))
-            .toList();
-
-        return PhotoWithReactions(
-          photoId: row['photo_id'] as int,
-          imgUrl: imgUrl,
-          uploaderName: uploaderName,
-          createdAt: createdAt,
-          reactions: reactions,
-        );
-      }).toList();
-    } catch (e) {
-      throw Exception('Unexpected error loading photos: $e');
+    } catch (error) {
+      throw Exception('Failed to load photos: $error');
     }
+
+    // 3️⃣ Parse the raw JSON list into our Dart models
+    final List data = res as List<dynamic>;
+    return data.map((raw) {
+      final row = raw as Map<String, dynamic>;
+
+      final imgUrl = row['img_url'] as String;
+      final uploaderName = row['uploader_name'] as String?;
+      final createdAt = DateTime.parse(row['photo_created_at'] as String);
+
+      final reactionsJson = (row['reactions'] as List<dynamic>).cast<Map<String, dynamic>>();
+      final reactions = reactionsJson
+          .map((j) => Reaction(j['reaction'] as String, j['count'] as int))
+          .toList();
+
+      return PhotoWithReactions(
+        photoId: row['photo_id'] as int,
+        imgUrl: imgUrl,
+        uploaderName: uploaderName,
+        createdAt: createdAt,
+        reactions: reactions,
+      );
+    }).toList();
   }
 
   /// Adds a new reaction to a photo.
