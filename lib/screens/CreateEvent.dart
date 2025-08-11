@@ -46,7 +46,13 @@ class _CreateEventState extends State<CreateEvent>{
   final TextEditingController eventDateController = TextEditingController();
   final TextEditingController eventTimeController = TextEditingController();
   final TextEditingController eventPointsController = TextEditingController();
+  final TextEditingController eventLocationController = TextEditingController();
+  final TextEditingController eventUrlController = TextEditingController();
+
+  final SupabaseService _supabaseService = SupabaseService();
+  final FirebaseAuthService _authService = FirebaseAuthService();
   
+  bool _isCreatingEvent = false;
 
   Uint8List? _flyer;
 
@@ -147,8 +153,93 @@ class _CreateEventState extends State<CreateEvent>{
 
 
   bool _isSuccess = false;
-  
 
+  Future<void> _createEvent() async {
+    // Validate required fields
+    if (eventNameController.text.trim().isEmpty ||
+        eventDescriptionController.text.trim().isEmpty ||
+        eventDateController.text.trim().isEmpty ||
+        eventTimeController.text.trim().isEmpty ||
+        eventPointsController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all required fields')),
+      );
+      return;
+    }
+
+    try {
+      setState(() {
+        _isCreatingEvent = true;
+      });
+
+      // Get current user
+      final currentUser = _authService.getCurrentUser();
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      // Get user ID from Supabase
+      final userId = await _supabaseService.getUserIdByFirebaseUid(currentUser.uid);
+
+      // Parse points
+      final points = int.tryParse(eventPointsController.text.trim());
+      if (points == null) {
+        throw Exception('Invalid points value');
+      }
+
+      // Upload image if available
+      String? imageUrl;
+      if (_flyer != null) {
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final fileName = '${eventNameController.text.trim().replaceAll(' ', '_')}_$timestamp.png';
+        imageUrl = await _supabaseService.uploadEventImage(_flyer!, fileName);
+      }
+
+      // Create the event
+      final eventId = await _supabaseService.createEvent(
+        name: eventNameController.text.trim(),
+        description: eventDescriptionController.text.trim(),
+        eventDate: eventDateController.text.trim(),
+        eventTime: eventTimeController.text.trim(),
+        pointsWorth: points,
+        createdBy: userId,
+        location: eventLocationController.text.trim().isEmpty 
+            ? null : eventLocationController.text.trim(),
+        eventUrl: eventUrlController.text.trim().isEmpty 
+            ? null : eventUrlController.text.trim(),
+        imageUrl: imageUrl, // Now includes the uploaded image URL
+        qrCodeUrl: _eventName, // Using the QR code data as URL for now
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Event created successfully!')),
+      );
+
+      // Clear form
+      eventNameController.clear();
+      eventDescriptionController.clear();
+      eventDateController.clear();
+      eventTimeController.clear();
+      eventPointsController.clear();
+      eventLocationController.clear();
+      eventUrlController.clear();
+      
+      setState(() {
+        _eventName = '';
+        qrImageBytes = null;
+        _flyer = null; // Clear the uploaded image
+      });
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error creating event: $e')),
+      );
+    } finally {
+      setState(() {
+        _isCreatingEvent = false;
+      });
+    }
+  }
   //Section for the drop down menu
   String? _dropdownValue = 'GBM';
 
@@ -301,6 +392,10 @@ class _CreateEventState extends State<CreateEvent>{
                         
                         SizedBox(height: 25),
                         InputField(text: 'Points', controller: eventPointsController),
+                        SizedBox(height: 25),
+                        InputField(text: 'Location (Optional)', controller: eventLocationController),
+                        SizedBox(height: 25),
+                        InputField(text: 'Event URL (Optional)', controller: eventUrlController),
                         SizedBox(height: 30),
                         
                         Row(
@@ -478,6 +573,54 @@ class _CreateEventState extends State<CreateEvent>{
 
                               ),
 
+                         ),
+
+                         SizedBox(height: 30),
+
+                         // Create Event Button
+                         SizedBox(
+                           width: double.infinity,
+                           child: ElevatedButton(
+                             onPressed: _isCreatingEvent ? null : _createEvent,
+                             style: ElevatedButton.styleFrom(
+                               backgroundColor: Colors.amber,
+                               padding: const EdgeInsets.symmetric(vertical: 15),
+                               shape: RoundedRectangleBorder(
+                                 borderRadius: BorderRadius.circular(30),
+                               ),
+                             ),
+                             child: _isCreatingEvent 
+                               ? const Row(
+                                   mainAxisAlignment: MainAxisAlignment.center,
+                                   children: [
+                                     SizedBox(
+                                       width: 20,
+                                       height: 20,
+                                       child: CircularProgressIndicator(
+                                         strokeWidth: 2,
+                                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                       ),
+                                     ),
+                                     SizedBox(width: 10),
+                                     Text(
+                                       'Creating Event...',
+                                       style: TextStyle(
+                                         color: Colors.white,
+                                         fontSize: 18,
+                                         fontWeight: FontWeight.bold,
+                                       ),
+                                     ),
+                                   ],
+                                 )
+                               : const Text(
+                                   'Create Event',
+                                   style: TextStyle(
+                                     color: Colors.white,
+                                     fontSize: 18,
+                                     fontWeight: FontWeight.bold,
+                                   ),
+                                 ),
+                           ),
                          ),
                           
     

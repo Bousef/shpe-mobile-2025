@@ -82,6 +82,7 @@ DEPENDENCIES:
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - Flutter (from `Flutter`)
+  - gallery_saver (from `.symlinks/plugins/gallery_saver/ios`)
   - image_gallery_saver (from `.symlinks/plugins/image_gallery_saver/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -113,6 +114,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_core/ios"
   Flutter:
     :path: Flutter
+  gallery_saver:
+    :path: ".symlinks/plugins/gallery_saver/ios"
   image_gallery_saver:
     :path: ".symlinks/plugins/image_gallery_saver/ios"
   image_picker_ios:
