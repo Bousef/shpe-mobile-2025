@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shpeucfmobile/screens/login.dart';
 import 'package:shpeucfmobile/widgets/custom_bottom_nav_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -89,70 +90,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               // Top logos
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'lib/images/topOfLeaderboard.png',
-                      width: 60,
-                      height: 60,
-                    ),
-                    const SizedBox(width: 10),
-                    SvgPicture.asset('lib/images/SHPE_Logo.svg', width: 100),
-                  ],
-                ),
+                child: Row(),
               ),
               // Centered Leaderboard banner
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Center(
-                  child: Image.asset(
-                    'lib/images/leaderboardWord.png',
-                    width: 220,
-                    height: 80,
-                    fit: BoxFit.contain,
-                  ),
-                ),
+                child: Center(child: SHPEHeaderText(text: 'Leaderboard')),
               ),
-              // Top 5 profile pictures
-              if (!isLoading && users.isNotEmpty)
-                Column(
-                  children: [
-                    SizedBox(
-                      height: 80,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(5, (index) {
-                          final user = users[index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                            ),
-                            child: Column(
-                              children: [
-                                ClipOval(
-                                  child: Image.asset(
-                                    'lib/images/topOfLeaderboard.png',
-                                    width: 55,
-                                    height: 55,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  user['points'].toString(),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                      ),
-                    ),
-                  ],
-                ),
+
               const SizedBox(height: 10),
               // User list or loading
               Expanded(
@@ -195,13 +140,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                             );
                           },
                         ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 25),
-                child: CustomBottomNavBar(
-                  currentIndex: _selectedIndex,
-                  onTap: _onItemTapped,
-                ),
               ),
             ],
           ),
