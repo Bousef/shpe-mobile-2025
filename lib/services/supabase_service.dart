@@ -64,8 +64,21 @@ class SupabaseService {
     return row;
   }
 
-  // Fetch all rows from events
+  // Fetch all rows from 10 events
   Future<List<Event>> fetchEvents() async {
+    final data = await client
+        .from('Events')
+        .select('*')
+        .order('event_date', ascending: true)
+        .limit(10);
+
+    return (data as List)
+        .map((row) => Event.fromJson(row as Map<String, dynamic>))
+        .toList();
+  }
+
+    // Fetch all rows from all events, made this for now might need to be edited in future idk
+  Future<List<Event>> fetchAllEvents() async {
     final data = await client
         .from('Events')
         .select('*')

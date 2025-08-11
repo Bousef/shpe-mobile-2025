@@ -124,7 +124,7 @@ Future<void> fetchCurrentUser() async {
                             future: _eventsFuture,
                             builder: (context, snap) {
                               if (snap.connectionState == ConnectionState.waiting) {
-                                return const Center(child: CircularProgressIndicator());
+                                return const Center(child: CircularProgressIndicator(color: Colors.white));
                               }
                               if (snap.hasError) {
                                 return Center(child: Text('Error: ${snap.error}'));

@@ -4,6 +4,8 @@ import '../widgets/custom_bottom_nav_bar.dart'; // update if path differs
 import 'package:shpeucfmobile/landing.dart';
 import 'package:shpeucfmobile/screens/CodeScanner.dart';
 import 'package:shpeucfmobile/screens/calendar.dart';
+import 'package:shpeucfmobile/services/supabase_service.dart';
+import 'package:shpeucfmobile/models/event.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -16,17 +18,24 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
+  List<Event> _events = [];
+  bool _isLoading = true;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadEvents();
+  }
 
+  Future<void> _loadEvents() async {
+    final supabaseService = SupabaseService();
+    final events = await supabaseService.fetchAllEvents();
+    setState(() {
+      _events = events;
+      _isLoading = false;
+    });
+  }
 
-
-  final List<Widget> _pages = [
-    Center(child: Landing()),
-    Center(child: Shpestagram()),
-    Center(child: CalendarPage()),
-    CodeScanner(), // ✅ here!,
-    Center(child: Text('Members Page', style: TextStyle(color: Colors.white))),
-  ];
 
 //This is how you will switch between pages from the dashboard (you need this logic on every other page as well)
 void _onItemTapped(int index) {
@@ -46,13 +55,25 @@ void _onItemTapped(int index) {
 
   @override
   Widget build(BuildContext context) {
+      final List<Widget> pages = [
+        Center(child: Landing()),
+        Center(child: Shpestagram()),
+        _isLoading
+          ? const Center(child: CircularProgressIndicator(color: Colors.white))
+          : CalendarPage(events: _events),
+        CodeScanner(), // ✅ here!,
+        Center(child: Text('Members Page', style: TextStyle(color: Colors.white))),
+      ];
+
+
+
     return Scaffold(
       extendBody: true,
       body: Stack(
         fit: StackFit.expand,
         children: [
           Image.asset('lib/images/background.png', fit: BoxFit.cover),
-          _pages[_selectedIndex],
+          pages[_selectedIndex],
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
