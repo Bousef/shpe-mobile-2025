@@ -28,6 +28,10 @@ dependencies:
   photo_view: ^0.15.0
   gallery_saver: ^2.3.2
   qr_flutter: ^4.0.0  
+  pretty_qr_code: ^3.5.0
+
+dependency_overrides:
+  pretty_qr_code: ^3.5.0
 
 dev_dependencies:
   flutter_test:
