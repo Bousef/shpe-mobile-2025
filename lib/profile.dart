@@ -111,9 +111,11 @@ class _ProfileState extends State<Profile> {
           if (!isLoading && curUser.isNotEmpty)
             SafeArea(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: 20),
+                  SizedBox(height: 10),
+                  // profile pic
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: curUser.map((user) {
@@ -130,73 +132,27 @@ class _ProfileState extends State<Profile> {
                       );
                     }).toList(),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 40),
+                  // user info
                   _buildUserInfo(),
                   const SizedBox(height: 15),
+                  // user stats
                   if (!isLoading2)
                     _buildStatsRow(),
                     const SizedBox(height: 30),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      _buildActionButton('USERNAME', 10),
-                      _buildActionButton('NOTIFICATIONS', 10),
-                      _buildActionButton('SETTINGS', 10),
-                    ],
-                  ),
+
+                  // --- OLD BUTTONS ---
+                  // Column(
+                  //   mainAxisAlignment: MainAxisAlignment.start,
+                  //   children: [
+                  //     _buildActionButton('USERNAME', 10),
+                  //     _buildActionButton('NOTIFICATIONS', 10),
+                  //     _buildActionButton('SETTINGS', 10),
+                  //   ],
+                  // ),
                 ],
               ),
             ),
-          //   Positioned(
-          //     top: 55,
-          //     left: 0,
-          //     right: 0,
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: curUser.map((user) {
-          //         final profileImg = _service.getAvatarUrl(user['firstname']);
-          //         return Padding(
-          //           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.25),
-          //           child: ClipOval(
-          //             child: SizedBox(
-          //               width: screenWidth * 0.5,
-          //               height: screenWidth * 0.5,
-          //               child: SvgPicture.network(profileImg, fit: BoxFit.cover),
-          //             ),
-          //           ),
-          //         );
-          //       }).toList(),
-          //     ),
-          //   ),
-          // if (!isLoading && curUser.isNotEmpty)
-          //   Positioned(
-          //     top: 310,
-          //     left: 0,
-          //     right: 0,
-          //     child: _buildUserInfo(),
-          //   ),
-          // if (!isLoading && !isLoading2 && curUser.isNotEmpty)
-          //   Positioned(
-          //     top: 430,
-          //     left: 0,
-          //     right: 0,
-          //     child: _buildStatsRow(),
-          //   ),
-          // _buildActionButton('USERNAME', 270),
-          // _buildActionButton('NOTIFICATIONS', 200),
-          // _buildActionButton('SETTINGS', 130),
-          // Column(
-          //   children: [
-          //     Expanded(child: _pages[_selectedIndex]),
-          //     Padding(
-          //       padding: const EdgeInsets.only(left: 20, right: 20, bottom: 25),
-          //       child: CustomBottomNavBar(
-          //         currentIndex: _selectedIndex,
-          //         onTap: _onItemTapped,
-          //       ),
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );
@@ -278,6 +234,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  // old button
   Widget _buildActionButton(String label, double bottomPadding) {
     return Container(
       alignment: Alignment.bottomCenter,
