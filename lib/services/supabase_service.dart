@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:convert'; // for utf8.encode
+import 'dart:typed_data'; // for Uint8List, more effieicent than List<int>
 import 'package:crypto/crypto.dart'; // for md5 or sha256
 import '../models/event.dart';
 
@@ -102,5 +103,60 @@ class SupabaseService {
     final index = hash[0] % 9;
 
     return avatars[index];
+  }
+
+  /// Create a new event in the Events table
+  Future<String> createEvent({
+    required String name,
+    required String description,
+    required String eventDate,
+    required String eventTime,
+    required int pointsWorth,
+    required int createdBy,
+    String? location,
+    String? eventUrl,
+    String? imageUrl,
+    String? qrCodeUrl,
+  }) async {
+    final data = await client.from('Events').insert({
+      'name': name,
+      'description': description,
+      'event_date': eventDate,
+      'event_time': eventTime,
+      'points_worth': pointsWorth,
+      'created_by': createdBy,
+      'location': location,
+      'event_url': eventUrl,
+      'image_url': imageUrl,
+      'qr_code_url': qrCodeUrl,
+    }).select('id').single();
+
+    return data['id'] as String;
+  }
+
+  /// Get user ID by Firebase UID (needed for created_by field)
+  Future<int> getUserIdByFirebaseUid(String firebaseUid) async {
+    final data = await client
+        .from('users')
+        .select('id')
+        .eq('firebase_uid', firebaseUid)
+        .single();
+
+    return data['id'] as int;
+  }
+
+  /// Upload image to Supabase storage bucket
+  Future<String> uploadEventImage(Uint8List imageBytes, String fileName) async {
+    final path = 'events_thumbnail/$fileName';
+    
+    await client.storage
+        .from('event-photos')
+        .uploadBinary(path, imageBytes);
+    
+    final publicUrl = client.storage
+        .from('event-photos')
+        .getPublicUrl(path);
+    
+    return publicUrl;
   }
 }
