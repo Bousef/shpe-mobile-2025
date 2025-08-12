@@ -44,7 +44,7 @@ class _ProfileState extends State<Profile> {
       final userInfo = await _service.client
           .from('users')
           .select('firstname, lastname, points, created_at, events_attended, major')
-          .eq('id', firebaseUid)
+          .eq('firebase_uid', firebaseUid)
           .single();
 
       setState(() {
@@ -109,56 +109,94 @@ class _ProfileState extends State<Profile> {
         children: [
           Image.asset('lib/images/background.png', fit: BoxFit.cover),
           if (!isLoading && curUser.isNotEmpty)
-            Positioned(
-              top: 55,
-              left: 0,
-              right: 0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: curUser.map((user) {
-                  final profileImg = _service.getAvatarUrl(user['firstname']);
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.25),
-                    child: ClipOval(
-                      child: SizedBox(
-                        width: screenWidth * 0.5,
-                        height: screenWidth * 0.5,
-                        child: SvgPicture.network(profileImg, fit: BoxFit.cover),
-                      ),
-                    ),
-                  );
-                }).toList(),
+            SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: curUser.map((user) {
+                      final profileImg = _service.getAvatarUrl(user['firstname']);
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.25),
+                        child: ClipOval(
+                          child: SizedBox(
+                            width: screenWidth * 0.5,
+                            height: screenWidth * 0.5,
+                            child: SvgPicture.network(profileImg, fit: BoxFit.cover),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 15),
+                  _buildUserInfo(),
+                  const SizedBox(height: 15),
+                  if (!isLoading2)
+                    _buildStatsRow(),
+                    const SizedBox(height: 30),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      _buildActionButton('USERNAME', 10),
+                      _buildActionButton('NOTIFICATIONS', 10),
+                      _buildActionButton('SETTINGS', 10),
+                    ],
+                  ),
+                ],
               ),
             ),
-          if (!isLoading && curUser.isNotEmpty)
-            Positioned(
-              top: 310,
-              left: 0,
-              right: 0,
-              child: _buildUserInfo(),
-            ),
-          if (!isLoading && !isLoading2 && curUser.isNotEmpty)
-            Positioned(
-              top: 430,
-              left: 0,
-              right: 0,
-              child: _buildStatsRow(),
-            ),
-          _buildActionButton('USERNAME', 270),
-          _buildActionButton('NOTIFICATIONS', 200),
-          _buildActionButton('SETTINGS', 130),
-          Column(
-            children: [
-              Expanded(child: _pages[_selectedIndex]),
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 25),
-                child: CustomBottomNavBar(
-                  currentIndex: _selectedIndex,
-                  onTap: _onItemTapped,
-                ),
-              ),
-            ],
-          ),
+          //   Positioned(
+          //     top: 55,
+          //     left: 0,
+          //     right: 0,
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: curUser.map((user) {
+          //         final profileImg = _service.getAvatarUrl(user['firstname']);
+          //         return Padding(
+          //           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.25),
+          //           child: ClipOval(
+          //             child: SizedBox(
+          //               width: screenWidth * 0.5,
+          //               height: screenWidth * 0.5,
+          //               child: SvgPicture.network(profileImg, fit: BoxFit.cover),
+          //             ),
+          //           ),
+          //         );
+          //       }).toList(),
+          //     ),
+          //   ),
+          // if (!isLoading && curUser.isNotEmpty)
+          //   Positioned(
+          //     top: 310,
+          //     left: 0,
+          //     right: 0,
+          //     child: _buildUserInfo(),
+          //   ),
+          // if (!isLoading && !isLoading2 && curUser.isNotEmpty)
+          //   Positioned(
+          //     top: 430,
+          //     left: 0,
+          //     right: 0,
+          //     child: _buildStatsRow(),
+          //   ),
+          // _buildActionButton('USERNAME', 270),
+          // _buildActionButton('NOTIFICATIONS', 200),
+          // _buildActionButton('SETTINGS', 130),
+          // Column(
+          //   children: [
+          //     Expanded(child: _pages[_selectedIndex]),
+          //     Padding(
+          //       padding: const EdgeInsets.only(left: 20, right: 20, bottom: 25),
+          //       child: CustomBottomNavBar(
+          //         currentIndex: _selectedIndex,
+          //         onTap: _onItemTapped,
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );
