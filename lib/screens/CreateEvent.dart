@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shpeucfmobile/screens/login.dart';
 import 'package:shpeucfmobile/widgets/custom_button.dart';
@@ -92,9 +93,6 @@ class _CreateEventState extends State<CreateEvent> {
     }
   }
 
-
-
-  bool _isSuccess = false;
 
   Future<void> _createEvent() async {
     // Validate required fields
@@ -182,8 +180,6 @@ class _CreateEventState extends State<CreateEvent> {
       });
     }
   }
-  //Section for the drop down menu
-  String? _dropdownValue = 'GBM';
 
 
 
