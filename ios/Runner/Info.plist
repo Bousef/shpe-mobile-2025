@@ -27,9 +27,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>This app needs camera access to scan QR codes</string>
+	<string>NSMicrophoneUsageDescription </string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>This app needs photo library access to save images.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your photo library </string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -51,12 +53,5 @@
 	</array>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-
-	<key>NSPhotoLibraryUsageDescription</key>
-		<string>This app needs access to your photo library </string>
-
-	<key>NSCameraUsageDescription</key>
-	<key>NSMicrophoneUsageDescription </key>
-
 </dict>
 </plist>

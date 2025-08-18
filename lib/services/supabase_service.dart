@@ -1,8 +1,10 @@
+// services/supabase_service.dart
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:convert'; // for utf8.encode
 import 'dart:typed_data'; // for Uint8List, more effieicent than List<int>
 import 'package:crypto/crypto.dart'; // for md5 or sha256
 import '../models/event.dart';
+import '../models/check_in_result.dart'; // <-- ADD THIS
 
 class SupabaseService {
   final SupabaseClient client = Supabase.instance.client;
@@ -78,7 +80,7 @@ class SupabaseService {
         .toList();
   }
 
-    // Fetch all rows from all events, made this for now might need to be edited in future idk
+  // Fetch all rows from all events
   Future<List<Event>> fetchAllEvents() async {
     final data = await client
         .from('Events')
@@ -148,15 +150,27 @@ class SupabaseService {
   /// Upload image to Supabase storage bucket
   Future<String> uploadEventImage(Uint8List imageBytes, String fileName) async {
     final path = 'events_thumbnail/$fileName';
-    
+
     await client.storage
         .from('event-photos')
         .uploadBinary(path, imageBytes);
-    
+
     final publicUrl = client.storage
         .from('event-photos')
         .getPublicUrl(path);
-    
+
     return publicUrl;
+  }
+
+  Future<CheckInResult> checkInToEvent({
+    required String firebaseUid, // must match users.firebase_uid
+    required String eventId,     // Events.id (UUID)
+  }) async {
+    final data = await client.rpc('check_in_to_event', params: {
+      'p_firebase_uid': firebaseUid,
+      'p_event_id': eventId,
+    }).single();
+
+    return CheckInResult.fromMap(Map<String, dynamic>.from(data));
   }
 }
