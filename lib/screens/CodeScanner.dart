@@ -1,11 +1,10 @@
-// screens/qr_scanner.dart
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:firebase_auth/firebase_auth.dart'; 
+import 'package:firebase_auth/firebase_auth.dart';
 import '../services/supabase_service.dart';
 import '../models/check_in_result.dart';
 
@@ -90,9 +89,19 @@ class _QRState extends State<QR> {
       log('Scanned Data: $raw');
 
       try {
-        final eventId = _extractEventId(raw);
+        // 1) Try to extract UUID from the QR data itself
+        String? eventId = _extractEventId(raw);
+
+        // 2) If not a UUID, treat as URL and look up Events.id by qr_code_url
         if (eventId == null) {
-          throw Exception('Invalid QR: no event UUID found.');
+          eventId = await _svc.getEventIdByQrUrl(raw);
+          if (eventId == null) {
+            eventId = await _svc.getEventIdByQrUrlLoose(raw);
+          }
+        }
+
+        if (eventId == null) {
+          throw Exception('Invalid QR: no event found for this QR link.');
         }
 
         // Get Firebase UID -> matches users.firebase_uid
@@ -133,7 +142,8 @@ class _QRState extends State<QR> {
   ///  - URL-like ".../event/<uuid>" or "...?event_id=<uuid>"
   String? _extractEventId(String raw) {
     final uuidRe = RegExp(
-      r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}'
+      r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-f]{12}',
+      caseSensitive: false,
     );
 
     // 1) Direct UUID in string

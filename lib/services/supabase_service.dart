@@ -1,10 +1,9 @@
-// services/supabase_service.dart
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:convert'; // for utf8.encode
 import 'dart:typed_data'; // for Uint8List, more effieicent than List<int>
 import 'package:crypto/crypto.dart'; // for md5 or sha256
 import '../models/event.dart';
-import '../models/check_in_result.dart'; // <-- ADD THIS
+import '../models/check_in_result.dart'; // <-- uses the DTO
 
 class SupabaseService {
   final SupabaseClient client = Supabase.instance.client;
@@ -162,6 +161,45 @@ class SupabaseService {
     return publicUrl;
   }
 
+  // ===========================
+  // NEW: look up event by qr_code_url
+  // ===========================
+  /// Exact match on qr_code_url
+  Future<String?> getEventIdByQrUrl(String qrUrl) async {
+    final data = await client
+        .from('Events')
+        .select('id')
+        .eq('qr_code_url', qrUrl)
+        .maybeSingle();
+    if (data == null) return null;
+    return data['id'] as String?;
+  }
+
+  /// Loose match using the last path segment (helps if domains/params vary)
+  Future<String?> getEventIdByQrUrlLoose(String qrUrl) async {
+    try {
+      final uri = Uri.parse(qrUrl);
+      final last = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : null;
+      if (last == null || last.isEmpty) return null;
+
+      final rows = await client
+          .from('Events')
+          .select('id, qr_code_url')
+          .ilike('qr_code_url', '%$last%')
+          .limit(1);
+
+      if (rows is List && rows.isNotEmpty) {
+        return (rows.first as Map<String, dynamic>)['id'] as String?;
+      }
+    } catch (_) {
+      // ignore parse errors
+    }
+    return null;
+  }
+
+  // ===========================
+  // Atomic check-in via RPC
+  // ===========================
   Future<CheckInResult> checkInToEvent({
     required String firebaseUid, // must match users.firebase_uid
     required String eventId,     // Events.id (UUID)
