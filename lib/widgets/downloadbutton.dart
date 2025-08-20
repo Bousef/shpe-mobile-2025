@@ -3,6 +3,8 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 
+enum DownloadStatus { idle, downloading, success, failure }
+
 class Downloadbutton extends StatefulWidget {
   final String imageUrl;
 
@@ -13,8 +15,9 @@ class Downloadbutton extends StatefulWidget {
 }
 
 class _DownloadbuttonState extends State<Downloadbutton> {
-  bool _isDownloading = false;
-  bool _downloaded = false;
+  DownloadStatus _status = DownloadStatus.idle;
+  // bool _isDownloading = false;
+  // bool _downloaded = false;
 
   Future<void> _downloadImage(String imageUrl) async {
     try {
@@ -29,6 +32,7 @@ class _DownloadbuttonState extends State<Downloadbutton> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Permission denied. Cannot save image.")),
         );
+        setState(() => _status = DownloadStatus.failure);
         return;
       }
 
@@ -38,6 +42,7 @@ class _DownloadbuttonState extends State<Downloadbutton> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Failed to download image.")),
         );
+        setState(() => _status = DownloadStatus.failure);
         return;
       }
 
@@ -49,60 +54,93 @@ class _DownloadbuttonState extends State<Downloadbutton> {
       );
 
       if (result['isSuccess'] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Image saved.")),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   //const SnackBar(content: Text("Image saved.")),
+        // );
+        setState(() => _status = DownloadStatus.success);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to save image.")),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   //const SnackBar(content: Text("Failed to save image.")),
+        // );
+        setState(() => _status = DownloadStatus.failure);
       }
     } catch (e) {
       print("Download failed: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Download failed: $e")),
       );
+      setState(() => _status = DownloadStatus.failure);
     }
   }
 
   void _Tap() async {
-    if (_isDownloading || _downloaded) return;
+    if (_status == DownloadStatus.downloading || _status == DownloadStatus.success ) return;
 
-    setState(() {
-      _isDownloading = true;
-    });
+    setState(() => _status = DownloadStatus.downloading);
 
     await _downloadImage(widget.imageUrl);
 
-    setState(() {
-      _isDownloading = false;
-      _downloaded = true;
-    });
+    setState(() => _status = DownloadStatus.success);
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget? icon;
+    Text text;
+
+    switch(_status){
+      case DownloadStatus.downloading:
+        icon = const SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 3,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        );
+        text = Text(
+          'Download',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Poppins',
+          )
+        );
+        break;
+      case DownloadStatus.success:
+        icon = const Icon(Icons.download_done, color: Colors.white);
+        text = Text(
+          'Downloaded!',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Poppins',
+          )
+        );
+        break;
+      case DownloadStatus.failure:
+        icon = const Icon(Icons.close, color: Colors.redAccent);
+        text = Text(
+          'Download failed.',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Poppins',
+          )
+        );
+        break;
+      default:
+        icon = const Icon(Icons.download, color: Colors.white);
+        text = Text(
+          'Download',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Poppins',
+          )
+        );
+    }
+
     return ElevatedButton.icon(
       onPressed: _Tap,
-      icon: _isDownloading
-        ? const SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 3,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-        )
-        : Icon(
-            _downloaded ? Icons.download_done : Icons.download, color: Colors.white
-          ),
-      label: const Text(
-        'Download',
-        style: TextStyle(
-          color: Colors.white,
-          fontFamily: 'Poppins',
-        )
-      ),
+      icon: icon,
+      label: text,
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.black87,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

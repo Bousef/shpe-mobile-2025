@@ -154,11 +154,18 @@ Future<void> fetchCurrentUser() async {
                               if (snap.hasError) {
                                 return Center(child: Text('Error: ${snap.error}'));
                               }
-                              final events = snap.data ?? [];
-                              if (events.isEmpty) {
-                                return const Center(child: Text('no events yet'));
+                              final allEvents = snap.data ?? [];
+                              final now = DateTime.now();
+
+                              final upcomingEvents = allEvents.where((event) {
+                                if(event.date == null) return false; //skips if no date
+                                //filter events so only present and future shows up
+                                return event.date!.isAtSameMomentAs(DateTime(now.year, now.month, now.day)) || event.date!.isAfter(DateTime(now.year, now.month, now.day));
+                              }).toList();
+                              if (upcomingEvents.isEmpty) {
+                                return const Center(child: Text('No upcoming events.'));
                               }
-                              return EventsCarousel(events: events);
+                              return EventsCarousel(events: upcomingEvents);
                             },
                           ),
                         ),

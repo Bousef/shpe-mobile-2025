@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:photo_view/photo_view.dart';
+import 'package:shpeucfmobile/widgets/downloadbutton.dart';
+import 'dart:async';
 
 class EventPhotoGallery extends StatefulWidget {
   final String eventId; // This should be a UUID string
@@ -45,11 +47,7 @@ class EventPhotoGalleryState extends State<EventPhotoGallery> {
         name: "event_photo_${DateTime.now().millisecondsSinceEpoch}",
       );
 
-      if (result['isSuccess']) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Image saved.")),
-        );
-      } else {
+      if (!result['isSuccess']) {
         print("Failed to save image: $result");
       }
     } catch (e) {
@@ -58,82 +56,82 @@ class EventPhotoGalleryState extends State<EventPhotoGallery> {
   }
 
 
-  void _showFullScreenImage(BuildContext context, String imageUrl) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.8),
-      barrierDismissible: true,
-      builder: (context) {
-        return GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
-          child: Dialog(
-            backgroundColor: Colors.transparent,
-            insetPadding: EdgeInsets.zero,
-            child: Stack(
-              fit: StackFit.expand,
-              alignment: Alignment.center,
-              children: [
-                // Centered full-screen image
-                Column(
+  Future<void> _showFullScreenImage(BuildContext context, String imageUrl) async {
+    double aspectRatio = 1; //fallback
+
+    // Get actual image dimensions
+    try {
+      final ImageProvider provider = imageUrl.isNotEmpty
+          ? NetworkImage(imageUrl)
+          : const AssetImage('lib/images/shpetest1.png') as ImageProvider;
+
+      final completer = Completer<Size>();
+      final stream = provider.resolve(const ImageConfiguration());
+      stream.addListener(
+        ImageStreamListener((ImageInfo info, bool _) {
+          completer.complete(
+            Size(info.image.width.toDouble(), info.image.height.toDouble()),
+          );
+        }),
+      );
+
+      final size = await completer.future;
+      aspectRatio = size.width / size.height;
+    } catch (_) {}
+
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (_, __, ___) {
+          return Stack(
+            children: [
+              // Single tap anywhere on background closes
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(color: Colors.black.withOpacity(0.6)),
+                ),
+              ),
+
+              // Photo + download button centered vertically
+              Center(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     GestureDetector(
-                      onTap: () {},
-                      child: InteractiveViewer(
-                        panEnabled: true,
-                        minScale: 0.5,
-                        maxScale: 4,
-                        child: ClipRRect(
-                          child: Image.network(
-                            imageUrl,
-                            fit: BoxFit.contain,
+                      onTap: () {}, // prevent close when tapping photo
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.8,
+                          maxWidth: MediaQuery.of(context).size.width * 0.95,
+                        ),
+                        child: AspectRatio(
+                          aspectRatio: aspectRatio,
+                          child: PhotoView(
+                            imageProvider: imageUrl.isNotEmpty
+                                ? NetworkImage(imageUrl)
+                                : const AssetImage('lib/images/shpetest1.png')
+                                    as ImageProvider,
+                            backgroundDecoration:
+                                const BoxDecoration(color: Colors.transparent),
+                            minScale: PhotoViewComputedScale.contained,
+                            maxScale: PhotoViewComputedScale.covered * 4.0,
+                            initialScale: PhotoViewComputedScale.contained,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    GestureDetector(
-                      onTap: () {},
-                      child: ElevatedButton.icon(
-                        onPressed: () async {
-                          await _downloadImage(imageUrl);
-                        },
-                        icon: const Icon(Icons.download, color: Colors.white),
-                        label: const Text(
-                          "Download",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'Poppins',
-                          )
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black87,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          )
-                        ),
-                      ),
-                    )
+                    const SizedBox(height: 12),
+                    Downloadbutton(imageUrl: imageUrl),
                   ],
                 ),
-          
-                // Close button
-                // TODO: see if theres a way to get icon just above pic instead of hardcoded
-                Positioned(
-                  top: 20,
-                  right: 20,
-                  child: IconButton(
-                    icon: Icon(Icons.close, color: Colors.white, size: 30),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
