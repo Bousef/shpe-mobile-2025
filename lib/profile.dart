@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shpeucfmobile/services/supabase_service.dart';
 import 'package:shpeucfmobile/widgets/custom_bottom_nav_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shpeucfmobile/screens/homescreen.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -138,7 +139,10 @@ class _ProfileState extends State<Profile> {
                   const SizedBox(height: 15),
                   // user stats
                   if (!isLoading2)
-                    _buildStatsRow(),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: _buildStatsRow()
+                    ),
                     const SizedBox(height: 30),
 
                   // --- OLD BUTTONS ---
@@ -151,6 +155,46 @@ class _ProfileState extends State<Profile> {
                   //   ],
                   // ),
                 ],
+              ),
+            ),
+
+            // --- LOGOUT ---
+            SafeArea(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    print('logout pressed'); //TODO: implement actual logout here
+                    try {
+                      // sign out from firebase and supabase
+                      await _auth.signOut();
+                      await supabase.auth.signOut();
+
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder:(context) => const HomeScreen()),
+                        (Route<dynamic> route) => false,
+                      );
+                    } catch (e) {
+                      print('error during logout: $e');
+                      SnackBar(content: Text('Logout failed, please try again.'));
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFF2AC02),
+                    textStyle: const TextStyle(fontFamily: 'Poppins'),
+                    fixedSize: Size(MediaQuery.sizeOf(context).width * 0.6, 50),
+                  ),
+                  child: Text(
+                    'Log out',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: 'Poppins',
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    )
+                  )
+                ),
               ),
             ),
         ],
@@ -199,12 +243,12 @@ class _ProfileState extends State<Profile> {
 
   Widget _buildStatsRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _buildStat((curUser[0]['points'] ?? 0).toString(), 'POINTS'),
-        const SizedBox(width: 50),
+        //const SizedBox(width: 50),
         _buildStat(leaderboardPosition.toString(), 'LEADERBOARD'),
-        const SizedBox(width: 50),
+        //const SizedBox(width: 50),
         _buildStat((curUser[0]['events_attended'] ?? 0).toString(), 'EVENTS'),
       ],
     );

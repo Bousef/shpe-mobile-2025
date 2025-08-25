@@ -68,7 +68,14 @@ class _EventsCarouselState extends State<EventsCarousel> {
                             child: const SizedBox(),
                           ),
                         ),
-                        
+                      Container(
+                        alignment: Alignment.center,
+                        constraints: BoxConstraints.expand(),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: Colors.black, width: 3,)
+                        ),
+                      )
                       // ----gradient and title on event cards
                       // ----keeping here for now just in case
                       // Align(
