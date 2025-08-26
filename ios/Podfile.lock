@@ -140,8 +140,8 @@ SPEC CHECKSUMS:
   app_links: 76b66b60cc809390ca1ad69bfd66b998d2387ac7
   device_info_plus: 71ffc6ab7634ade6267c7a93088ed7e4f74e5896
   Firebase: d99ac19b909cd2c548339c2241ecd0d1599ab02e
-  firebase_auth: 50af8366c87bb88c80ebeae62eb60189c7246b9b
-  firebase_core: 995454a784ff288be5689b796deb9e9fa3601818
+  firebase_auth: 5342db41af2ba5ed32a6177d9e326eecbebda912
+  firebase_core: 99a37263b3c27536063a7b601d9e2a49400a433c
   FirebaseAppCheckInterop: 06fe5a3799278ae4667e6c432edd86b1030fa3df
   FirebaseAuth: a6575e5fbf46b046c58dc211a28a5fbdd8d4c83b
   FirebaseAuthInterop: 7087d7a4ee4bc4de019b2d0c240974ed5d89e2fd
@@ -149,18 +149,18 @@ SPEC CHECKSUMS:
   FirebaseCoreExtension: edbd30474b5ccf04e5f001470bdf6ea616af2435
   FirebaseCoreInternal: 9afa45b1159304c963da48addb78275ef701c6b4
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  gallery_saver: 1d68d1818df11b1afa84a97d1a530463753e92e3
+  gallery_saver: 9fc173c9f4fcc48af53b2a9ebea1b643255be542
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMSessionFetcher: fc75fc972958dceedee61cb662ae1da7a83a91cf
-  image_gallery_saver: 14711d79da40581063e8842a11acf1969d781ed7
-  image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
+  image_gallery_saver: cb43cc43141711190510e92c460eb1655cd343cb
+  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
-  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
-  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
-  qr_code_scanner_plus: 7e087021bc69873140e0754750eb87d867bed755
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  qr_code_scanner_plus: 3bfe4deb7f28996a63a2a580819d49dae80d5ed3
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
-  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
-  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
+  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
+  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
 
 PODFILE CHECKSUM: f0ae1c9c2110501f74eb8a381ecbff3c0def3f76
 

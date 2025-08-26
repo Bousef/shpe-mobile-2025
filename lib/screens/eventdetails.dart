@@ -294,9 +294,8 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                               ],
                             ),
                             SizedBox(height: 20),
+
                           //----- PHOTOS -----
-                            //this is temporary until either i figure out font
-                            //    or get image
                             SHPEHeaderText(text: 'PHOTOS', fontSize: 40),
                             SizedBox(height: 5),
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shpeucfmobile/models/event.dart';
+import 'package:shpeucfmobile/profile.dart';
 import 'package:shpeucfmobile/widgets/events_carousel.dart';
 import 'package:shpeucfmobile/services/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -97,7 +98,31 @@ Future<void> fetchCurrentUser() async {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        SvgPicture.asset('lib/images/SHPE_Logo.svg', width: 150),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            SizedBox(width: 50), // eventually put notifications button here
+                            SvgPicture.asset('lib/images/SHPE_Logo.svg', width: 150),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder:(context) => Profile())
+                                );
+                              },
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFF2AC02),
+                                  shape: BoxShape.circle
+                                ),
+                                child: Image.asset(
+                                  'lib/images/Profile2.png', width: 50, color: Colors.black
+                                )
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 10),
                         if (currentUserFirstName != null)
                           Padding(
@@ -129,11 +154,18 @@ Future<void> fetchCurrentUser() async {
                               if (snap.hasError) {
                                 return Center(child: Text('Error: ${snap.error}'));
                               }
-                              final events = snap.data ?? [];
-                              if (events.isEmpty) {
-                                return const Center(child: Text('no events yet'));
+                              final allEvents = snap.data ?? [];
+                              final now = DateTime.now();
+
+                              final upcomingEvents = allEvents.where((event) {
+                                if(event.date == null) return false; //skips if no date
+                                //filter events so only present and future shows up
+                                return event.date!.isAtSameMomentAs(DateTime(now.year, now.month, now.day)) || event.date!.isAfter(DateTime(now.year, now.month, now.day));
+                              }).toList();
+                              if (upcomingEvents.isEmpty) {
+                                return const Center(child: Text('No upcoming events.'));
                               }
-                              return EventsCarousel(events: events);
+                              return EventsCarousel(events: upcomingEvents);
                             },
                           ),
                         ),

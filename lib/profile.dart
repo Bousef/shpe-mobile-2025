@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shpeucfmobile/services/supabase_service.dart';
 import 'package:shpeucfmobile/widgets/custom_bottom_nav_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shpeucfmobile/screens/homescreen.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -44,7 +45,7 @@ class _ProfileState extends State<Profile> {
       final userInfo = await _service.client
           .from('users')
           .select('firstname, lastname, points, created_at, events_attended, major')
-          .eq('id', firebaseUid)
+          .eq('firebase_uid', firebaseUid)
           .single();
 
       setState(() {
@@ -109,56 +110,93 @@ class _ProfileState extends State<Profile> {
         children: [
           Image.asset('lib/images/background.png', fit: BoxFit.cover),
           if (!isLoading && curUser.isNotEmpty)
-            Positioned(
-              top: 55,
-              left: 0,
-              right: 0,
-              child: Row(
+            SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: curUser.map((user) {
-                  final profileImg = _service.getAvatarUrl(user['firstname']);
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.25),
-                    child: ClipOval(
-                      child: SizedBox(
-                        width: screenWidth * 0.5,
-                        height: screenWidth * 0.5,
-                        child: SvgPicture.network(profileImg, fit: BoxFit.cover),
-                      ),
+                children: [
+                  SizedBox(height: 10),
+                  // profile pic
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: curUser.map((user) {
+                      final profileImg = _service.getAvatarUrl(user['firstname']);
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.25),
+                        child: ClipOval(
+                          child: SizedBox(
+                            width: screenWidth * 0.5,
+                            height: screenWidth * 0.5,
+                            child: SvgPicture.network(profileImg, fit: BoxFit.cover),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 40),
+                  // user info
+                  _buildUserInfo(),
+                  const SizedBox(height: 15),
+                  // user stats
+                  if (!isLoading2)
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: _buildStatsRow()
                     ),
-                  );
-                }).toList(),
+                    const SizedBox(height: 30),
+
+                  // --- OLD BUTTONS ---
+                  // Column(
+                  //   mainAxisAlignment: MainAxisAlignment.start,
+                  //   children: [
+                  //     _buildActionButton('USERNAME', 10),
+                  //     _buildActionButton('NOTIFICATIONS', 10),
+                  //     _buildActionButton('SETTINGS', 10),
+                  //   ],
+                  // ),
+                ],
               ),
             ),
-          if (!isLoading && curUser.isNotEmpty)
-            Positioned(
-              top: 310,
-              left: 0,
-              right: 0,
-              child: _buildUserInfo(),
-            ),
-          if (!isLoading && !isLoading2 && curUser.isNotEmpty)
-            Positioned(
-              top: 430,
-              left: 0,
-              right: 0,
-              child: _buildStatsRow(),
-            ),
-          _buildActionButton('USERNAME', 270),
-          _buildActionButton('NOTIFICATIONS', 200),
-          _buildActionButton('SETTINGS', 130),
-          Column(
-            children: [
-              Expanded(child: _pages[_selectedIndex]),
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 25),
-                child: CustomBottomNavBar(
-                  currentIndex: _selectedIndex,
-                  onTap: _onItemTapped,
+
+            // --- LOGOUT ---
+            SafeArea(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    print('logout pressed'); //TODO: implement actual logout here
+                    try {
+                      // sign out from firebase and supabase
+                      await _auth.signOut();
+                      await supabase.auth.signOut();
+
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder:(context) => const HomeScreen()),
+                        (Route<dynamic> route) => false,
+                      );
+                    } catch (e) {
+                      print('error during logout: $e');
+                      SnackBar(content: Text('Logout failed, please try again.'));
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFF2AC02),
+                    textStyle: const TextStyle(fontFamily: 'Poppins'),
+                    fixedSize: Size(MediaQuery.sizeOf(context).width * 0.6, 50),
+                  ),
+                  child: Text(
+                    'Log out',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: 'Poppins',
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    )
+                  )
                 ),
               ),
-            ],
-          ),
+            ),
         ],
       ),
     );
@@ -205,12 +243,12 @@ class _ProfileState extends State<Profile> {
 
   Widget _buildStatsRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _buildStat((curUser[0]['points'] ?? 0).toString(), 'POINTS'),
-        const SizedBox(width: 50),
+        //const SizedBox(width: 50),
         _buildStat(leaderboardPosition.toString(), 'LEADERBOARD'),
-        const SizedBox(width: 50),
+        //const SizedBox(width: 50),
         _buildStat((curUser[0]['events_attended'] ?? 0).toString(), 'EVENTS'),
       ],
     );
@@ -240,6 +278,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  // old button
   Widget _buildActionButton(String label, double bottomPadding) {
     return Container(
       alignment: Alignment.bottomCenter,
