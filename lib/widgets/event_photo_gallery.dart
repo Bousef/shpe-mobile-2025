@@ -6,8 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:shpeucfmobile/widgets/downloadbutton.dart';
-import 'dart:async';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class EventPhotoGallery extends StatefulWidget {
   final String eventId; // UUID
@@ -22,117 +21,6 @@ class EventPhotoGalleryState extends State<EventPhotoGallery> {
   int currentPage = 0;
   final int itemsPerPage = 4;
   int refreshTrigger = 0;
-
-  Future<void> _downloadImage(String imageUrl) async {
-    try {
-      // Ask for permission (Android)
-      var status = await Permission.storage.request();
-      if (!status.isGranted) {
-        print('storage permission denied');
-        return;
-      }
-
-      // Download image data
-      final response = await http.get(Uri.parse(imageUrl));
-      if (response.statusCode != 200) {
-        print('failed to download image');
-        return;
-      }
-
-      final result = await ImageGallerySaver.saveImage(
-        response.bodyBytes,
-        quality: 100,
-        name: "event_photo_${DateTime.now().millisecondsSinceEpoch}",
-      );
-
-      if (!result['isSuccess']) {
-        print("Failed to save image: $result");
-      }
-    } catch (e) {
-      print('Download failed: $e');
-    }
-  }
-
-
-  Future<void> _showFullScreenImage(BuildContext context, String imageUrl) async {
-    double aspectRatio = 1; //fallback
-
-    // Get actual image dimensions
-    try {
-      final ImageProvider provider = imageUrl.isNotEmpty
-          ? NetworkImage(imageUrl)
-          : const AssetImage('lib/images/shpetest1.png') as ImageProvider;
-
-      final completer = Completer<Size>();
-      final stream = provider.resolve(const ImageConfiguration());
-      stream.addListener(
-        ImageStreamListener((ImageInfo info, bool _) {
-          completer.complete(
-            Size(info.image.width.toDouble(), info.image.height.toDouble()),
-          );
-        }),
-      );
-
-      final size = await completer.future;
-      aspectRatio = size.width / size.height;
-    } catch (_) {}
-
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (_, __, ___) {
-          return Stack(
-            children: [
-              // Single tap anywhere on background closes
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(color: Colors.black.withOpacity(0.6)),
-                ),
-              ),
-
-              // Photo + download button centered vertically
-              Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GestureDetector(
-                      onTap: () {}, // prevent close when tapping photo
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height * 0.8,
-                          maxWidth: MediaQuery.of(context).size.width * 0.95,
-                        ),
-                        child: AspectRatio(
-                          aspectRatio: aspectRatio,
-                          child: PhotoView(
-                            imageProvider: imageUrl.isNotEmpty
-                                ? NetworkImage(imageUrl)
-                                : const AssetImage('lib/images/shpetest1.png')
-                                    as ImageProvider,
-                            backgroundDecoration:
-                                const BoxDecoration(color: Colors.transparent),
-                            minScale: PhotoViewComputedScale.contained,
-                            maxScale: PhotoViewComputedScale.covered * 4.0,
-                            initialScale: PhotoViewComputedScale.contained,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Downloadbutton(imageUrl: imageUrl),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
 
   void refreshGallery() {
     setState(() {
