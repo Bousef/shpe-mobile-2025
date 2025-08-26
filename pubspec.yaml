@@ -29,6 +29,7 @@ dependencies:
   gallery_saver: ^2.3.2
   qr_flutter: ^4.0.0  
   pretty_qr_code: ^3.5.0
+  device_info_plus: ^10.1.0
 
 dependency_overrides:
   pretty_qr_code: ^3.5.0
