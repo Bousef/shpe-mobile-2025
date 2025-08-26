@@ -40,7 +40,7 @@ class HomeScreen extends StatelessWidget {
                     backgroundColor: Color(0xFFF2AC02),
                     textColor: Color(0xFFF1F3F7),
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => const Login()),
                       );
@@ -53,7 +53,7 @@ class HomeScreen extends StatelessWidget {
                     textColor: Color(0xFFF2AC02),
                     //Go to Sign Up page
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => const SignUp()),
                       );
