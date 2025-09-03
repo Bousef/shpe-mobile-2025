@@ -354,6 +354,7 @@ class _CreateEventState extends State<CreateEvent> {
                               DropdownMenuEntry<String>(value: 'MentorSHPE', label: 'MentorSHPE'),
                               DropdownMenuEntry<String>(value: 'Projects', label: 'Projects'),
                               DropdownMenuEntry<String>(value: 'SHPEtinas', label: 'SHPEtinas'),
+                              DropdownMenuEntry<String>(value: 'Socials', label: 'Socials'),
                               DropdownMenuEntry<String>(value: 'Outreach', label: 'Outreach'),
                             ],
                             textStyle: const TextStyle(

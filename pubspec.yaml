@@ -9,9 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-    
-  flutter_staggered_animations: ^1.1.1 
-
+  flutter_staggered_animations: ^1.1.1
   firebase_core: ^3.15.1
   firebase_auth: ^5.6.2
   supabase_flutter: ^2.9.1
@@ -27,7 +25,7 @@ dependencies:
   http: ^0.13.5
   photo_view: ^0.15.0
   gallery_saver: ^2.3.2
-  qr_flutter: ^4.0.0  
+  qr_flutter: ^4.0.0
   pretty_qr_code: ^3.5.0
   device_info_plus: ^10.1.0
 
@@ -38,6 +36,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
@@ -55,7 +54,6 @@ flutter:
     - lib/images/Profile2.png
     - lib/images/SHPE.png
     - lib/images/topOfLeaderboard.png
-    - lib/images/Leaderboard.png
     - lib/images/leaderboardWord.png
     - lib/images/leaderboardWord2.png
     - lib/images/topOfLeaderboard.svg
@@ -75,3 +73,10 @@ flutter:
     - family: Adumu
       fonts:
         - asset: fonts/Adumu.ttf
+
+# 👉 Launcher icons config must be TOP-LEVEL (sibling of flutter/dev_dependencies), not nested under flutter.
+flutter_launcher_icons:
+  android: false         # set to false if iOS-only; change to true if you want Android too
+  ios: true
+  image_path: "lib/images/SHPEIcon.png"
+  remove_alpha_ios: true
